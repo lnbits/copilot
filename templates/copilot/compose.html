@@ -13,6 +13,45 @@
   ></video>
   <img src="" style="width: 100%" id="animations" class="fixed-bottom-left" />
 
+
+  <q-card
+  id="draggabletroll"
+  v-show="troll_box"
+  class="rounded-borders bg-dark"
+
+  style="
+    width: 350px;
+    height: 600px;
+    margin-top: 10%;
+    float:right;
+ "
+>
+<q-card-section>
+  <div class="text-h6">Trollbox (scan qr to join)</div>{% raw %}
+  <div class="row">
+    <div class="col" style="max-width:100px">
+      <qrcode
+        :value="chatUrl"
+        :options="{width:100}"
+        class="rounded-borders"
+      ></qrcode>
+    </div>
+    <div class="col">
+      <br/><br/>
+      <p class="q-ml-md">Chat ID: {{chat_id}}</p>
+    </div>
+  </div>
+  {% endraw %}
+</q-card-section>
+
+<q-separator dark inset />
+
+<q-card-section>
+  {{ trollbox }}
+</q-card-section>
+  
+</q-card>
+
   <div
     v-if="copilot.lnurl_toggle == 1"
     id="draggableqr"
@@ -86,6 +125,14 @@
     height: 60px;
     cursor: grab;
   }
+  #draggabletroll {
+    width: 300px;
+    height: 300px;
+    cursor: grab;
+  }
+  #videoCamera {
+    cursor: grab;
+  }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
@@ -97,21 +144,23 @@
     mixins: [windowMixin],
     data() {
       return {
-        chatid: '',
         price: '',
         counter: 1,
         colours: ['teal', 'purple', 'indigo', 'pink', 'green'],
         copilot: {},
         animQueue: [],
         queue: false,
-        lnurl: ''
+        lnurl: '',
+        troll_box: false,
+        trollbox: [],
+        chatUrl: '',
+        chat_id: ''
       }
     },
     methods: {
       showNotif: function (userMessage) {
-        var colour = this.colours[
-          Math.floor(Math.random() * this.colours.length)
-        ]
+        var colour =
+          this.colours[Math.floor(Math.random() * this.colours.length)]
         this.$q.notify({
           color: colour,
           icon: 'chat_bubble_outline',
@@ -149,6 +198,12 @@
             console.log('Something went wrong!')
           })
       },
+      initTrollBox(){
+          self = this
+          self.troll_box = !self.troll_box
+          console.log(self.troll_box )
+          self.chatUrl = window.location.hostname + '/copilot/chat/' + self.chat_id
+      },
       pushAnim(content) {
         document.getElementById('animations').style.width = content[0]
         document.getElementById('animations').src = content[1]
@@ -158,9 +213,6 @@
         setTimeout(function () {
           document.getElementById('animations').src = ''
         }, 5000)
-      },
-      addChat(){
-        this.chatid = 
       },
       launch() {
         self = this
@@ -180,7 +232,30 @@
           .catch(err => {
             LNbits.utils.notifyApiError(err)
           })
-      }
+      },
+      initWs: async function () {
+        if (location.protocol !== 'http:') {
+          localUrl =
+            'wss://' +
+            document.domain +
+            ':' +
+            location.port +
+            '/api/v1/ws/' + this.copilot.chat_id 
+        } else {
+          localUrl =
+            'ws://' +
+            document.domain +
+            ':' +
+            location.port +
+            '/api/v1/ws/' + this.copilot.chat_id 
+        }
+        this.ws = new WebSocket(localUrl)
+        this.ws.addEventListener('message', async ({data}) => {
+          const res = data.toString()
+          chatres
+          this.trollbox.push(res);
+        })
+      },
     },
     mounted() {
       this.initCamera()
@@ -189,6 +264,8 @@
       $(function () {
         $('#draggableqr').draggable()
         $('#draggableprice').draggable()
+        $('#draggabletroll').draggable()
+        $('#videoCamera').draggable()
       }),
         (self = this)
       self.copilot = JSON.parse(localStorage.getItem('copilot'))
@@ -294,6 +371,10 @@
         if (res[0] == 'rick') {
           addTask(['40%', '/copilot/static/rick.gif', res[1]])
         }
+        if (res[0] == 'trollbox') {
+          self.chat_id = res[1]
+          self.initTrollBox()
+        }
         if (res[0] == 'true') {
           document.getElementById('videoCamera').style.width = '20%'
           self.initScreenShare()
@@ -301,9 +382,6 @@
         if (res[0] == 'false') {
           document.getElementById('videoCamera').style.width = '100%'
           document.getElementById('videoScreen').src = null
-        }
-        else (res[0] == 'chat') {
-          this.addChat(res[1])
         }
       }
       this.connection.onopen = () => this.launch

@@ -33,7 +33,7 @@ async def panel(request: Request):
     )
 
 @copilot_ext.get("/chat/{chat_id}", response_class=HTMLResponse)
-async def chat(chat_id, request: Request):
+async def panel(request: Request, chat_id):
     return copilot_renderer().TemplateResponse(
         "copilot/chat.html", {"request": request, "chat_id": chat_id}
     )

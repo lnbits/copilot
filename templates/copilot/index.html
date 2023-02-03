@@ -160,19 +160,50 @@
           label="Title"
         ></q-input>
         <div class="row">
-          <q-checkbox
-            v-model="formDialogCopilot.data.lnurl_toggle"
-            label="Include lnurl payment QR? (requires https)"
-            left-label
-          ></q-checkbox>
+          <div class="col">
+
+        <div class="q-gutter-sm">
+          <q-select
+            filled
+            dense
+            style="width: 50%"
+            v-model.trim="formDialogCopilot.data.show_price"
+            :options="currencyOptions"
+            label="Show price"
+          />
         </div>
 
+
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            
+            <q-checkbox
+            v-model="formDialogCopilot.data.lnurl_toggle"
+            label="Tip QR code"
+          ></q-checkbox>
+          </div>
+          <div class="col">
+            <div class="q-gutter-sm">
+              <div class="row">
+                <q-checkbox
+                  v-model="formDialogCopilot.data.show_ack"
+                  label="Show 'powered by LNbits'"
+                ></q-checkbox>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
         <div v-if="formDialogCopilot.data.lnurl_toggle">
+          <q-separator class="q-mb-md"></q-separator>
+          <div class="text-subtitle1">(LNURL-pay requires https)</div>
           <q-checkbox
             v-model="formDialogCopilot.data.show_message"
-            left-label
-            label="Show lnurl-pay messages? (supported by few wallets)"
-          ></q-checkbox>
+          ><q-tolltip>LNURL messages (supported by a few wallets)</q-tolltip></q-checkbox>
 
           <q-select
             filled
@@ -338,25 +369,6 @@
           </q-input>
         </div>
 
-        <div class="q-gutter-sm">
-          <q-select
-            filled
-            dense
-            style="width: 50%"
-            v-model.trim="formDialogCopilot.data.show_price"
-            :options="currencyOptions"
-            label="Show price"
-          />
-        </div>
-        <div class="q-gutter-sm">
-          <div class="row">
-            <q-checkbox
-              v-model="formDialogCopilot.data.show_ack"
-              left-label
-              label="Show 'powered by LNbits'"
-            ></q-checkbox>
-          </div>
-        </div>
         <div class="row q-mt-lg">
           <q-btn
             v-if="formDialogCopilot.data.id"
