@@ -97,6 +97,7 @@
     mixins: [windowMixin],
     data() {
       return {
+        chatid: '',
         price: '',
         counter: 1,
         colours: ['teal', 'purple', 'indigo', 'pink', 'green'],
@@ -108,8 +109,9 @@
     },
     methods: {
       showNotif: function (userMessage) {
-        var colour =
-          this.colours[Math.floor(Math.random() * this.colours.length)]
+        var colour = this.colours[
+          Math.floor(Math.random() * this.colours.length)
+        ]
         this.$q.notify({
           color: colour,
           icon: 'chat_bubble_outline',
@@ -156,6 +158,9 @@
         setTimeout(function () {
           document.getElementById('animations').src = ''
         }, 5000)
+      },
+      addChat(){
+        this.chatid = 
       },
       launch() {
         self = this
@@ -296,6 +301,9 @@
         if (res[0] == 'false') {
           document.getElementById('videoCamera').style.width = '100%'
           document.getElementById('videoScreen').src = null
+        }
+        else (res[0] == 'chat') {
+          this.addChat(res[1])
         }
       }
       this.connection.onopen = () => this.launch

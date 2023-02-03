@@ -38,7 +38,7 @@
             <q-btn
               style="width: 95%"
               color="primary"
-              @click="animationBTN('rocket')"
+              @click="animationBTN(name = 'rocket')"
               label="rocket"
               size="sm"
             />
@@ -47,7 +47,7 @@
             <q-btn
               style="width: 95%"
               color="primary"
-              @click="animationBTN('confetti')"
+              @click="animationBTN(name = 'rocket')"
               label="confetti"
               size="sm"
             />
@@ -56,7 +56,7 @@
             <q-btn
               style="width: 95%"
               color="primary"
-              @click="animationBTN('face')"
+              @click="animationBTN(name = 'rocket')"
               label="face"
               size="sm"
             />
@@ -67,7 +67,7 @@
             <q-btn
               style="width: 95%"
               color="primary"
-              @click="animationBTN('rick')"
+              @click="animationBTN(name = 'rocket')"
               label="rick"
               size="sm"
             />
@@ -76,7 +76,7 @@
             <q-btn
               style="width: 95%"
               color="primary"
-              @click="animationBTN('martijn')"
+              @click="animationBTN(name = 'rocket')"
               label="martijn"
               size="sm"
             />
@@ -85,12 +85,35 @@
             <q-btn
               style="width: 95%"
               color="primary"
-              @click="animationBTN('bitcoin')"
+              @click="animationBTN(name = 'rocket')"
               label="bitcoin"
               size="sm"
             />
           </div>
         </div>
+        <br/>
+        <q-separator></q-separator>
+        <br/>
+        
+        <div class="row q-pa-sm">
+          <p>Launch Chat</p>
+            <q-input dense outlined v-model="chatcost" label="Sat cost per message"></q-input>
+          
+        </div>
+        <div class="row q-pa-sm">
+            <q-input dense outlined v-model="chatid" label="Chat ID">
+              <template v-slot:append>
+                <q-icon name="add_circle" @click="createChatID()" class="cursor-pointer"><q-tooltip>genrate an ID</q-tooltip></q-icon>
+              </template>
+      
+              <template v-slot:hint>
+                Chat ID
+              </template>
+            </q-input>
+          </div>
+          <div class="row q-pa-sm">
+            <q-btn class="primary" label="Make chat" @click="animationBTN(name = 'chat')"></q-btn>
+          </div>
       </div>
     </div>
   </q-card>
@@ -108,7 +131,9 @@
         fullscreen_cam: true,
         textareaModel: '',
         iframe: '',
-        copilot: {}
+        copilot: {},
+        chatcost: '',
+        chatid: ''
       }
     },
     methods: {
@@ -129,12 +154,17 @@
           'scrollbars=no, resizable=no,status=no,location=no,toolbar=no,menubar=no,width=1200,height=644,left=410,top=100'
         open('../cp/', 'test', params)
       },
-      animationBTN: function (name) {
+      createChatID: function () {
+        uuid = Quasar.utils.uid().substring(0, 13)
+        console.log(uuid)
+        this.chatid = uuid
+      },
+      animationBTN: function (data = "none", name = "none") {
         self = this
         LNbits.api
           .request(
             'GET',
-            '/copilot/api/v1/copilot/ws/' + self.copilot.id + '/none/' + name
+            '/copilot/api/v1/copilot/ws/' + self.copilot.id + '/' + data +'/' + name
           )
           .then(function (response1) {
             self.$q.notify({
