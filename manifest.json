@@ -8,7 +8,7 @@
             "short_description": "For streamers to accept sats and trigger gifs",
             "icon": "https://raw.githubusercontent.com/lnbits/copilot/main/static/bitcoin-streaming.png",
             "archive": "https://github.com/lnbits/lnbits-extensions/raw/main/extensions/copilot/copilot.zip",
-            "hash": "b4feec7292c190a3a98a0aba65f5632354b0db804dd409b89af7bbc1f548c35f"
+            "hash": "b7912ebfdb7bd5043e9781ce9e2e74db77e748d8de188573ffcdd7420085a5da"
         }
     ]
 }
