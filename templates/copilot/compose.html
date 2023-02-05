@@ -13,44 +13,57 @@
   ></video>
   <img src="" style="width: 100%" id="animations" class="fixed-bottom-left" />
 
-
   <q-card
-  id="draggabletroll"
-  v-show="troll_box"
-  class="rounded-borders bg-dark"
+    id="draggabletroll"
+    v-show="troll_box"
+    class="rounded-borders bg-dark"
+    style="width: 350px; height: 500px; margin-top: 10%; float: right"
+  >
+    <q-card-section>
+      {% raw %}
+      <div class="row">
+        <div class="col" style="max-width: 100px">
+          <qrcode
+            :value="chatUrl"
+            :options="{width:100}"
+            class="rounded-borders"
+          ></qrcode>
+        </div>
+        <div class="col">
+          <div class="text-h6 q-ml-md">Trollbox</div>
+          <a
+            :href="chatLink"
+            class="text-white"
+            style="color: #43a047"
+            target="_blank"
+            ><p class="q-ml-md">{{chatLink}}</p></a
+          >
+        </div>
+      </div>
+    </q-card-section>
 
-  style="
-    width: 350px;
-    height: 600px;
-    margin-top: 10%;
-    float:right;
- "
->
-<q-card-section>
-  <div class="text-h6">Trollbox (scan qr to join)</div>{% raw %}
-  <div class="row">
-    <div class="col" style="max-width:100px">
-      <qrcode
-        :value="chatUrl"
-        :options="{width:100}"
-        class="rounded-borders"
-      ></qrcode>
-    </div>
-    <div class="col">
-      <br/><br/>
-      <p class="q-ml-md">Chat ID: {{chat_id}}</p>
-    </div>
-  </div>
-  {% endraw %}
-</q-card-section>
+    <q-separator dark inset></q-separator>
 
-<q-separator dark inset />
-
-<q-card-section>
-  {{ trollbox }}
-</q-card-section>
-  
-</q-card>
+    <q-card-actions>
+      <div
+        class="absolute-bottom q-ml-md q-mb-xs"
+        style="
+          max-height: 360px;
+          overflow: auto;
+          display: flex;
+          flex-direction: column-reverse;
+        "
+      >
+        <p
+          v-for="troll in chatCompute"
+          style="margin-bottom: 5px; word-wrap: break-word"
+        >
+          {{troll}}
+        </p>
+        {% endraw %}
+      </div>
+    </q-card-actions>
+  </q-card>
 
   <div
     v-if="copilot.lnurl_toggle == 1"
@@ -154,7 +167,13 @@
         troll_box: false,
         trollbox: [],
         chatUrl: '',
-        chat_id: ''
+        chat_id: '',
+        chatLink: ''
+      }
+    },
+    computed: {
+      chatCompute: function () {
+        return self.trollbox
       }
     },
     methods: {
@@ -198,11 +217,39 @@
             console.log('Something went wrong!')
           })
       },
-      initTrollBox(){
-          self = this
-          self.troll_box = !self.troll_box
-          console.log(self.troll_box )
-          self.chatUrl = window.location.hostname + '/copilot/chat/' + self.chat_id
+      initTrollBox() {
+        self = this
+        self.troll_box = !self.troll_box
+        if (location.protocol !== 'http:') {
+          self.chatUrl =
+            'wss://' +
+            document.domain +
+            ':' +
+            location.port +
+            '/api/v1/ws/' +
+            self.chat_id
+        } else {
+          self.chatUrl =
+            'ws://' +
+            document.domain +
+            ':' +
+            location.port +
+            '/api/v1/ws/' +
+            self.chat_id
+        }
+        this.connectionchat = new WebSocket(self.chatUrl)
+        this.connectionchat.onmessage = function (e) {
+          res = e.data.split('-')
+          if (res[0].length < 1 || res[1].length < 1) {
+            return
+          }
+          comment = res[0].toUpperCase() + ': ' + res[1]
+          if (self.trollbox.length > 50) {
+            self.trollbox.pop()
+          }
+          self.trollbox.unshift(comment)
+        }
+        this.connectionchat.onopen = () => this.launch
       },
       pushAnim(content) {
         document.getElementById('animations').style.width = content[0]
@@ -232,30 +279,7 @@
           .catch(err => {
             LNbits.utils.notifyApiError(err)
           })
-      },
-      initWs: async function () {
-        if (location.protocol !== 'http:') {
-          localUrl =
-            'wss://' +
-            document.domain +
-            ':' +
-            location.port +
-            '/api/v1/ws/' + this.copilot.chat_id 
-        } else {
-          localUrl =
-            'ws://' +
-            document.domain +
-            ':' +
-            location.port +
-            '/api/v1/ws/' + this.copilot.chat_id 
-        }
-        this.ws = new WebSocket(localUrl)
-        this.ws.addEventListener('message', async ({data}) => {
-          const res = data.toString()
-          chatres
-          this.trollbox.push(res);
-        })
-      },
+      }
     },
     mounted() {
       this.initCamera()
@@ -373,7 +397,11 @@
         }
         if (res[0] == 'trollbox') {
           self.chat_id = res[1]
+          self.chatLink = '/copilot/chat/' + self.chat_id
           self.initTrollBox()
+        }
+        if (res[0] == 'trollboxchat') {
+          this.trollbox.push(res[1])
         }
         if (res[0] == 'true') {
           document.getElementById('videoCamera').style.width = '20%'

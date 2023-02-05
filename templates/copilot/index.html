@@ -161,29 +161,25 @@
         ></q-input>
         <div class="row">
           <div class="col">
-
-        <div class="q-gutter-sm">
-          <q-select
-            filled
-            dense
-            style="width: 50%"
-            v-model.trim="formDialogCopilot.data.show_price"
-            :options="currencyOptions"
-            label="Show price"
-          />
-        </div>
-
-
+            <div class="q-gutter-sm">
+              <q-select
+                filled
+                dense
+                style="width: 50%"
+                v-model.trim="formDialogCopilot.data.show_price"
+                :options="currencyOptions"
+                label="Show price"
+              />
+            </div>
           </div>
         </div>
 
         <div class="row">
           <div class="col">
-            
             <q-checkbox
-            v-model="formDialogCopilot.data.lnurl_toggle"
-            label="Tip QR code"
-          ></q-checkbox>
+              v-model="formDialogCopilot.data.lnurl_toggle"
+              label="Tip QR code"
+            ></q-checkbox>
           </div>
           <div class="col">
             <div class="q-gutter-sm">
@@ -197,13 +193,14 @@
           </div>
         </div>
 
-
         <div v-if="formDialogCopilot.data.lnurl_toggle">
           <q-separator class="q-mb-md"></q-separator>
           <div class="text-subtitle1">(LNURL-pay requires https)</div>
-          <q-checkbox
-            v-model="formDialogCopilot.data.show_message"
-          ><q-tolltip>LNURL messages (supported by a few wallets)</q-tolltip></q-checkbox>
+          <q-checkbox v-model="formDialogCopilot.data.show_message"
+            ><q-tolltip
+              >LNURL messages (supported by a few wallets)</q-tolltip
+            ></q-checkbox
+          >
 
           <q-select
             filled
