@@ -5,8 +5,8 @@ from http import HTTPStatus
 from fastapi import Request
 from fastapi.param_functions import Query
 from lnurl.types import LnurlPayMetadata
-from starlette.exceptions import HTTPException
-from starlette.responses import HTMLResponse
+from fastapi.exceptions import HTTPException
+from fastapi.responses import HTMLResponse
 
 from lnbits.core.services import create_invoice
 
@@ -17,7 +17,7 @@ from .crud import get_copilot
 @copilot_ext.get(
     "/lnurl/{cp_id}", response_class=HTMLResponse, name="copilot.lnurl_response"
 )
-async def lnurl_response(req: Request, cp_id: str = Query(None)):
+async def lnurl_response(req: Request, cp_id: str):
     cp = await get_copilot(cp_id)
     if not cp:
         raise HTTPException(
@@ -41,7 +41,7 @@ async def lnurl_response(req: Request, cp_id: str = Query(None)):
     "/lnurl/cb/{cp_id}", response_class=HTMLResponse, name="copilot.lnurl_callback"
 )
 async def lnurl_callback(
-    cp_id: str = Query(None), amount: str = Query(None), comment: str = Query(None)
+    cp_id: str, amount: str = Query(None), comment: str = Query(None)
 ):
     cp = await get_copilot(cp_id)
     if not cp:

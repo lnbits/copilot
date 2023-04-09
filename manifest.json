@@ -1,9 +1,9 @@
 {
-    "repos": [
-        {
-            "id": "copilot",
-            "organisation": "lnbits",
-            "repository": "copilot"
-        }
-    ]
+  "repos": [
+    {
+      "id": "copilot",
+      "organisation": "lnbits",
+      "repository": "copilot"
+    }
+  ]
 }
