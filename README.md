@@ -1,4 +1,5 @@
 # StreamerCopilot
+## This is an [LNbits](https://github.com/lnbits/lnbits) extension
 
 Tool to help streamers accept sats for tips
 
