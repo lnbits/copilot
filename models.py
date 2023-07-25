@@ -19,9 +19,9 @@ class CreateCopilotData(BaseModel):
     animation1: str = Query(None)
     animation2: str = Query(None)
     animation3: str = Query(None)
-    animation1threshold: int = Query(None)
-    animation2threshold: int = Query(None)
-    animation3threshold: int = Query(None)
+    animation1threshold: int = Query(0)
+    animation2threshold: int = Query(0)
+    animation3threshold: int = Query(0)
     animation1webhook: str = Query(None)
     animation2webhook: str = Query(None)
     animation3webhook: str = Query(None)
@@ -33,10 +33,9 @@ class CreateCopilotData(BaseModel):
     timestamp: int = Query(0)
     fullscreen_cam: int = Query(0)
     iframe_url: str = Query(None)
-    success_url: str = Query(None)
 
 
-class Copilots(BaseModel):
+class Copilot(BaseModel):
     id: str
     user: str = Query(None)
     title: str = Query(None)
@@ -59,7 +58,6 @@ class Copilots(BaseModel):
     timestamp: int = Query(0)
     fullscreen_cam: int = Query(0)
     iframe_url: str = Query(None)
-    success_url: str = Query(None)
 
     def lnurl(self, req: Request) -> str:
         url = req.url_for("copilot.lnurl_response", cp_id=self.id)
