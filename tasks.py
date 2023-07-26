@@ -3,7 +3,7 @@ import json
 from http import HTTPStatus
 
 import httpx
-from starlette.exceptions import HTTPException
+from fastapi.exceptions import HTTPException
 
 from lnbits.core import db as core_db
 from lnbits.core.models import Payment

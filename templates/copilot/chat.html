@@ -1,0 +1,117 @@
+{% extends "public.html" %} {% block page %}
+<q-page>
+  <div class="row q-col-gutter-md justify-center">
+    <div class="col-12 col-md-7 col-lg-6 q-gutter-y-md">
+      <q-card class="q-pa-lg">
+        <q-card-section>
+          <q-form @submit="sendMessage" class="full-width chat-input">
+            <q-input
+              ref="newMessage"
+              v-model="newMessage"
+              placeholder="Message"
+              class="full-width"
+              dense
+              outlined
+              maxlength="100"
+            >
+              <template>
+                <q-btn
+                  round
+                  dense
+                  flat
+                  type="submit"
+                  icon="send"
+                  color="primary"
+                />
+              </template>
+            </q-input>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </div>
+  </div>
+  {% for comment in trollbox %} {{ comment }} {% endfor %}
+  <q-dialog
+    v-model="pers"
+    persistent
+    transition-show="scale"
+    transition-hide="scale"
+  >
+    <q-card style="width: 300px">
+      <q-card-section>
+        <q-input label="Name" maxlength="10" v-model="name"></q-input>
+      </q-card-section>
+      <q-card-section class="q-pt-none">
+        <q-btn v-close-popup color="primary" label="lanch chat"></q-btn>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+</q-page>
+{% endblock %} {% block scripts %}
+<script>
+  new Vue({
+    el: '#vue',
+    mixins: [windowMixin],
+    data: function () {
+      return {
+        name: '',
+        newMessage: '',
+        trollbox: [],
+        pers: true
+      }
+    },
+    methods: {
+      sendMessage: function (message) {
+        self = this
+        LNbits.api
+          .request(
+            'GET',
+            '/api/v1/ws/{{chat_id}}/' + this.name + '-' + this.newMessage
+          )
+          .then(function (response1) {
+            self.newMessage = ''
+            self.$q.notify({
+              color: 'green',
+              message: 'Sent!'
+            })
+          })
+          .catch(err => {
+            LNbits.utils.notifyApiError(err)
+          })
+      },
+      initTrollBox() {
+        self = this
+        self.troll_box = !self.troll_box
+        console.log(self.troll_box)
+
+        if (location.protocol !== 'http:') {
+          self.chatUrl =
+            'wss://' +
+            document.domain +
+            ':' +
+            location.port +
+            '/api/v1/ws/' +
+            self.chat_id
+        } else {
+          self.chatUrl =
+            'ws://' +
+            document.domain +
+            ':' +
+            location.port +
+            '/api/v1/ws/' +
+            self.chat_id
+        }
+        this.connectionchat = new WebSocket(self.chatUrl)
+        this.connectionchat.onmessage = function (e) {
+          this.trollbox.push(e.data)
+        }
+        this.connectionchat.onopen = () => this.launch
+      }
+    },
+    created: function () {
+      self = this
+      self.initTrollBox()
+    }
+  })
+</script>
+{% endblock %}

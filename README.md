@@ -1,4 +1,5 @@
-# StreamerCopilot
+# StreamerCopilot - <small>[LNbits](https://github.com/lnbits/lnbits) extension</small>
+<small>For more about LNBits extension check [this tutorial](https://github.com/lnbits/lnbits/wiki/LNbits-Extensions)</small>
 
 Tool to help streamers accept sats for tips
 
@@ -7,6 +8,3 @@ Tool to help streamers accept sats for tips
 ![image](https://user-images.githubusercontent.com/33088785/214897589-e51e4948-d6cf-4c3b-a0ee-b4581e873b6c.png)
 
 ![image](https://user-images.githubusercontent.com/33088785/214898501-193c0f04-9738-4039-b178-ea0068a61685.png)
-
-
-

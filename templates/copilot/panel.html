@@ -91,6 +91,12 @@
             />
           </div>
         </div>
+
+        <q-input v-model="chatId" label="Troll box ID">
+          <template v-slot:after>
+            <q-btn round dense flat icon="launch" @click="launchChat" />
+          </template>
+        </q-input>
       </div>
     </div>
   </q-card>
@@ -108,7 +114,8 @@
         fullscreen_cam: true,
         textareaModel: '',
         iframe: '',
-        copilot: {}
+        copilot: {},
+        chatId: ''
       }
     },
     methods: {
@@ -135,6 +142,27 @@
           .request(
             'GET',
             '/copilot/api/v1/copilot/ws/' + self.copilot.id + '/none/' + name
+          )
+          .then(function (response1) {
+            self.$q.notify({
+              color: 'green',
+              message: 'Sent!'
+            })
+          })
+          .catch(err => {
+            LNbits.utils.notifyApiError(err)
+          })
+      },
+      launchChat: function () {
+        self = this
+        LNbits.api
+          .request(
+            'GET',
+            '/copilot/api/v1/copilot/ws/' +
+              self.copilot.id +
+              '/' +
+              this.chatId +
+              '/trollbox'
           )
           .then(function (response1) {
             self.$q.notify({

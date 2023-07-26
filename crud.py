@@ -3,14 +3,14 @@ from typing import List, Optional
 from lnbits.helpers import urlsafe_short_hash
 
 from . import db
-from .models import Copilots, CreateCopilotData
+from .models import Copilot, CreateCopilotData
 
 ###############COPILOTS##########################
 
 
 async def create_copilot(
     data: CreateCopilotData, inkey: Optional[str] = ""
-) -> Optional[Copilots]:
+) -> Copilot:
     copilot_id = urlsafe_short_hash()
     await db.execute(
         """
@@ -63,12 +63,14 @@ async def create_copilot(
             0,
         ),
     )
-    return await get_copilot(copilot_id)
+    copilot = await get_copilot(copilot_id)
+    assert copilot, "Newly created copilot couldn't be retrieved"
+    return copilot
 
 
 async def update_copilot(
     data: CreateCopilotData, copilot_id: str
-) -> Optional[Copilots]:
+) -> Copilot:
     q = ", ".join([f"{field[0]} = ?" for field in data])
     items = [f"{field[1]}" for field in data]
     items.append(copilot_id)
@@ -76,21 +78,22 @@ async def update_copilot(
     row = await db.fetchone(
         "SELECT * FROM copilot.newer_copilots WHERE id = ?", (copilot_id,)
     )
-    return Copilots(**row) if row else None
+    assert row, "Updated copilot couldn't be retrieved"
+    return Copilot(**row)
 
 
-async def get_copilot(copilot_id: str) -> Optional[Copilots]:
+async def get_copilot(copilot_id: str) -> Optional[Copilot]:
     row = await db.fetchone(
         "SELECT * FROM copilot.newer_copilots WHERE id = ?", (copilot_id,)
     )
-    return Copilots(**row) if row else None
+    return Copilot(**row) if row else None
 
 
-async def get_copilots(user: str) -> List[Copilots]:
+async def get_copilots(user: str) -> List[Copilot]:
     rows = await db.fetchall(
         'SELECT * FROM copilot.newer_copilots WHERE "user" = ?', (user,)
     )
-    return [Copilots(**row) for row in rows]
+    return [Copilot(**row) for row in rows]
 
 
 async def delete_copilot(copilot_id: str) -> None:
