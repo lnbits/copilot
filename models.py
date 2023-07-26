@@ -4,9 +4,9 @@ from typing import Dict, Optional
 from urllib.parse import ParseResult, parse_qs, urlencode, urlparse, urlunparse
 
 from fastapi.param_functions import Query
+from fastapi.requests import Request
 from lnurl.types import LnurlPayMetadata
 from pydantic import BaseModel
-from fastapi.requests import Request
 
 from lnbits.lnurl import encode as lnurl_encode
 
@@ -37,27 +37,27 @@ class CreateCopilotData(BaseModel):
 
 class Copilot(BaseModel):
     id: str
-    user: str
+    user: Optional[str]
     title: str
     lnurl_toggle: int
-    wallet: str
-    animation1: str
-    animation2: str
-    animation3: str
-    animation1threshold: str
-    animation2threshold: str
-    animation3threshold: str
-    animation1webhook: str
-    animation2webhook: str
-    animation3webhook: str
-    lnurl_title: str
+    wallet: Optional[str]
+    animation1: Optional[str]
+    animation2: Optional[str]
+    animation3: Optional[str]
+    animation1threshold: int
+    animation2threshold: int
+    animation3threshold: int
+    animation1webhook: Optional[str]
+    animation2webhook: Optional[str]
+    animation3webhook: Optional[str]
+    lnurl_title: Optional[str]
     show_message: int
     show_ack: int
-    show_price: str
+    show_price: Optional[str]
     amount_made: int
     timestamp: int
     fullscreen_cam: int
-    iframe_url: str
+    iframe_url: Optional[str]
 
     def lnurl(self, req: Request) -> str:
         url = req.url_for("copilot.lnurl_response", cp_id=self.id)
