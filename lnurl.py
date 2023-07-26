@@ -1,8 +1,7 @@
 import json
 from http import HTTPStatus
 
-from fastapi import Request
-from fastapi.param_functions import Query
+from fastapi import Request, Query
 from lnurl.types import LnurlPayMetadata
 from fastapi.exceptions import HTTPException
 from fastapi.responses import HTMLResponse

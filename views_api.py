@@ -1,7 +1,6 @@
 from http import HTTPStatus
-from typing import Optional
 
-from fastapi import Depends, Query, Request
+from fastapi import Depends, Request
 from fastapi.exceptions import HTTPException
 
 from lnbits.core.services import websocketUpdater

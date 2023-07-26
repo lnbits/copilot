@@ -1,4 +1,5 @@
-from fastapi import Query, Reuqest
+from typing import Optional
+from fastapi import Query, Request
 from lnurl.types import LnurlPayMetadata
 from pydantic import BaseModel
 
