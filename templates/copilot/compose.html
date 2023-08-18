@@ -77,14 +77,16 @@
     "
   >
     <div class="col">
-      <qrcode
-        :value="'lightning:' + copilot.lnurl"
-        :options="{width:250}"
-        class="rounded-borders"
-      ></qrcode>
-      <center class="absolute-bottom" style="color: black; font-size: 20px">
-        {% raw %}{{ copilot.lnurl_title }}{% endraw %}
-      </center>
+      <a class="text-secondary" :href="'lightning:' + copilot.lnurl">
+        <qrcode
+          :value="'lightning:' + copilot.lnurl"
+          :options="{width:250}"
+          class="rounded-borders"
+        ></qrcode>
+        <center class="absolute-bottom" style="color: black; font-size: 20px">
+          {% raw %}{{ copilot.lnurl_title }}{% endraw %}
+        </center>
+      </a>
     </div>
   </div>
 
