@@ -196,11 +196,9 @@
         <div v-if="formDialogCopilot.data.lnurl_toggle">
           <q-separator class="q-mb-md"></q-separator>
           <div class="text-subtitle1">(LNURL-pay requires https)</div>
-          <q-checkbox v-model="formDialogCopilot.data.show_message"
-            ><q-tooltip
-              >LNURL messages (supported by a few wallets)</q-tolltip
-            ></q-checkbox
-          >
+          <q-checkbox v-model="formDialogCopilot.data.show_message">
+            <q-tooltip>LNURL messages (supported by a few wallets)</q-tooltip>
+          </q-checkbox>
 
           <q-select
             filled
@@ -235,7 +233,7 @@
                     <q-input
                       filled
                       dense
-                      v-model.trim="formDialogCopilot.data.animation1threshold"
+                      v-model.number="formDialogCopilot.data.animation1threshold"
                       type="number"
                       step="1"
                       label="From *sats (min. 10)"
@@ -488,7 +486,11 @@
       closeFormDialog: function () {
         this.clearFormDialogCopilot()
         this.formDialog.data = {
-          is_unique: false
+          lnurl_toggle: false,
+          show_message: false,
+          show_ack: false,
+          show_price: 'None',
+          title: ''
         }
       },
       sendFormDataCopilot: function () {
@@ -499,8 +501,6 @@
             self.formDialogCopilot.data
           )
         } else {
-          console.log(self.g.user.wallets[0].adminkey)
-          console.log(self.formDialogCopilot.data)
           this.createCopilot(
             self.g.user.wallets[0].adminkey,
             self.formDialogCopilot.data
@@ -525,6 +525,7 @@
             updatedData[property] = parseInt(data[property])
           }
         }
+
         LNbits.api
           .request('POST', '/copilot/api/v1/copilot', wallet, updatedData)
           .then(function (response) {
@@ -607,7 +608,9 @@
         var self = this
         var copilot = _.findWhere(this.CopilotLinks, {id: copilotId})
         self.formDialogCopilot.data = _.clone(copilot._data)
+
         self.formDialogCopilot.show = true
+        console.log(self.formDialogCopilot.data)
       },
       updateCopilot: function (wallet, data) {
         var self = this
