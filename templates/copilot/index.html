@@ -233,7 +233,7 @@
                     <q-input
                       filled
                       dense
-                      v-model.number="formDialogCopilot.data.animation1threshold"
+                      v-model="formDialogCopilot.data.animation1threshold"
                       type="number"
                       step="1"
                       label="From *sats (min. 10)"
@@ -495,6 +495,7 @@
       },
       sendFormDataCopilot: function () {
         var self = this
+        console.log(self.formDialogCopilot.data)
         if (self.formDialogCopilot.data.id) {
           this.updateCopilot(
             self.g.user.wallets[0].adminkey,
@@ -607,10 +608,17 @@
       openUpdateCopilotLink: function (copilotId) {
         var self = this
         var copilot = _.findWhere(this.CopilotLinks, {id: copilotId})
-        self.formDialogCopilot.data = _.clone(copilot._data)
-
+        self.formDialogCopilot.data = {...copilot._data} //_.clone(copilot._data)
+        self.formDialogCopilot.data.lnurl_toggle = Boolean(
+          self.formDialogCopilot.data.lnurl_toggle
+        )
+        self.formDialogCopilot.data.show_message = Boolean(
+          self.formDialogCopilot.data.show_message
+        )
+        self.formDialogCopilot.data.show_ack = Boolean(
+          self.formDialogCopilot.data.show_ack
+        )
         self.formDialogCopilot.show = true
-        console.log(self.formDialogCopilot.data)
       },
       updateCopilot: function (wallet, data) {
         var self = this
