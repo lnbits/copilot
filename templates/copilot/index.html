@@ -238,6 +238,7 @@
                       step="1"
                       label="From *sats (min. 10)"
                       :rules="[ val => val >= 10 || 'Please use minimum 10' ]"
+                      min="10"
                     >
                     </q-input>
                   </div>
@@ -282,7 +283,7 @@
                     <q-input
                       filled
                       dense
-                      v-model="formDialogCopilot.data.animation2threshold"
+                      v-model="formDialogCopilot.data.animation2threshold || null"
                       type="number"
                       step="1"
                       label="From *sats"
@@ -331,7 +332,7 @@
                     <q-input
                       filled
                       dense
-                      v-model="formDialogCopilot.data.animation3threshold"
+                      v-model="formDialogCopilot.data.animation3threshold || null"
                       type="number"
                       step="1"
                       label="From *sats"
@@ -495,7 +496,6 @@
       },
       sendFormDataCopilot: function () {
         var self = this
-        console.log(self.formDialogCopilot.data)
         if (self.formDialogCopilot.data.id) {
           this.updateCopilot(
             self.g.user.wallets[0].adminkey,
@@ -608,7 +608,7 @@
       openUpdateCopilotLink: function (copilotId) {
         var self = this
         var copilot = _.findWhere(this.CopilotLinks, {id: copilotId})
-        self.formDialogCopilot.data = {...copilot._data} //_.clone(copilot._data)
+        self.formDialogCopilot.data = {...copilot._data}
         self.formDialogCopilot.data.lnurl_toggle = Boolean(
           self.formDialogCopilot.data.lnurl_toggle
         )
@@ -622,19 +622,24 @@
       },
       updateCopilot: function (wallet, data) {
         var self = this
-        var updatedData = {}
+        const updatedData = {}
+
+        const updateThreshold = property => {
+          if (data[property] && data[property] !== 0) {
+            updatedData[property] = parseInt(data[property])
+          }
+        }
+
         for (const property in data) {
           if (data[property]) {
             updatedData[property] = data[property]
           }
-          if (property == 'animation1threshold' && data[property]) {
-            updatedData[property] = parseInt(data[property])
-          }
-          if (property == 'animation2threshold' && data[property]) {
-            updatedData[property] = parseInt(data[property])
-          }
-          if (property == 'animation3threshold' && data[property]) {
-            updatedData[property] = parseInt(data[property])
+          switch (property) {
+            case 'animation1threshold':
+            case 'animation2threshold':
+            case 'animation3threshold':
+              updateThreshold(property)
+              break
           }
         }
 
