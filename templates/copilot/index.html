@@ -196,11 +196,9 @@
         <div v-if="formDialogCopilot.data.lnurl_toggle">
           <q-separator class="q-mb-md"></q-separator>
           <div class="text-subtitle1">(LNURL-pay requires https)</div>
-          <q-checkbox v-model="formDialogCopilot.data.show_message"
-            ><q-tooltip
-              >LNURL messages (supported by a few wallets)</q-tolltip
-            ></q-checkbox
-          >
+          <q-checkbox v-model="formDialogCopilot.data.show_message">
+            <q-tooltip>LNURL messages (supported by a few wallets)</q-tooltip>
+          </q-checkbox>
 
           <q-select
             filled
@@ -235,11 +233,12 @@
                     <q-input
                       filled
                       dense
-                      v-model.trim="formDialogCopilot.data.animation1threshold"
+                      v-model="formDialogCopilot.data.animation1threshold"
                       type="number"
                       step="1"
                       label="From *sats (min. 10)"
                       :rules="[ val => val >= 10 || 'Please use minimum 10' ]"
+                      min="10"
                     >
                     </q-input>
                   </div>
@@ -284,7 +283,7 @@
                     <q-input
                       filled
                       dense
-                      v-model="formDialogCopilot.data.animation2threshold"
+                      v-model="formDialogCopilot.data.animation2threshold || null"
                       type="number"
                       step="1"
                       label="From *sats"
@@ -333,7 +332,7 @@
                     <q-input
                       filled
                       dense
-                      v-model="formDialogCopilot.data.animation3threshold"
+                      v-model="formDialogCopilot.data.animation3threshold || null"
                       type="number"
                       step="1"
                       label="From *sats"
@@ -488,7 +487,11 @@
       closeFormDialog: function () {
         this.clearFormDialogCopilot()
         this.formDialog.data = {
-          is_unique: false
+          lnurl_toggle: false,
+          show_message: false,
+          show_ack: false,
+          show_price: 'None',
+          title: ''
         }
       },
       sendFormDataCopilot: function () {
@@ -499,8 +502,6 @@
             self.formDialogCopilot.data
           )
         } else {
-          console.log(self.g.user.wallets[0].adminkey)
-          console.log(self.formDialogCopilot.data)
           this.createCopilot(
             self.g.user.wallets[0].adminkey,
             self.formDialogCopilot.data
@@ -525,6 +526,7 @@
             updatedData[property] = parseInt(data[property])
           }
         }
+
         LNbits.api
           .request('POST', '/copilot/api/v1/copilot', wallet, updatedData)
           .then(function (response) {
@@ -606,24 +608,38 @@
       openUpdateCopilotLink: function (copilotId) {
         var self = this
         var copilot = _.findWhere(this.CopilotLinks, {id: copilotId})
-        self.formDialogCopilot.data = _.clone(copilot._data)
+        self.formDialogCopilot.data = {...copilot._data}
+        self.formDialogCopilot.data.lnurl_toggle = Boolean(
+          self.formDialogCopilot.data.lnurl_toggle
+        )
+        self.formDialogCopilot.data.show_message = Boolean(
+          self.formDialogCopilot.data.show_message
+        )
+        self.formDialogCopilot.data.show_ack = Boolean(
+          self.formDialogCopilot.data.show_ack
+        )
         self.formDialogCopilot.show = true
       },
       updateCopilot: function (wallet, data) {
         var self = this
-        var updatedData = {}
+        const updatedData = {}
+
+        const updateThreshold = property => {
+          if (data[property] && data[property] !== 0) {
+            updatedData[property] = parseInt(data[property])
+          }
+        }
+
         for (const property in data) {
           if (data[property]) {
             updatedData[property] = data[property]
           }
-          if (property == 'animation1threshold' && data[property]) {
-            updatedData[property] = parseInt(data[property])
-          }
-          if (property == 'animation2threshold' && data[property]) {
-            updatedData[property] = parseInt(data[property])
-          }
-          if (property == 'animation3threshold' && data[property]) {
-            updatedData[property] = parseInt(data[property])
+          switch (property) {
+            case 'animation1threshold':
+            case 'animation2threshold':
+            case 'animation3threshold':
+              updateThreshold(property)
+              break
           }
         }
 
