@@ -71,7 +71,9 @@ async def api_copilot_update(
     return await update_copilot(data, copilot_id=copilot_id)
 
 
-@copilot_ext.delete("/api/v1/copilot/{copilot_id}", dependencies=[Depends(require_admin_key)])
+@copilot_ext.delete(
+    "/api/v1/copilot/{copilot_id}", dependencies=[Depends(require_admin_key)]
+)
 async def api_copilot_delete(
     copilot_id: str,
 ):
