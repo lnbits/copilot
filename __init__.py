@@ -1,7 +1,6 @@
 import asyncio
 
 from fastapi import APIRouter
-from fastapi.staticfiles import StaticFiles
 
 from lnbits.db import Database
 from lnbits.helpers import template_renderer
@@ -12,7 +11,6 @@ db = Database("ext_copilot")
 copilot_static_files = [
     {
         "path": "/copilot/static",
-        "app": StaticFiles(packages=[("lnbits", "extensions/copilot/static")]),
         "name": "copilot_static",
     }
 ]
@@ -20,7 +18,7 @@ copilot_ext: APIRouter = APIRouter(prefix="/copilot", tags=["copilot"])
 
 
 def copilot_renderer():
-    return template_renderer(["lnbits/extensions/copilot/templates"])
+    return template_renderer(["copilot/templates"])
 
 
 from .lnurl import *  # noqa
