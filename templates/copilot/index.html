@@ -220,14 +220,50 @@
               <q-card-section>
                 <div class="row">
                   <div class="col">
+                         <q-toggle
+            :label="`${formDialogCopilot.toggle ? 'Select' : 'Upload'}`"
+            v-model="formDialogCopilot.toggle"
+          ></q-toggle>       
+                  </div>
+                  <div class="col">
+
                     <q-select
+                    v-if="formDialogCopilot.toggle"
                       filled
                       dense
                       v-model.trim="formDialogCopilot.data.animation1"
                       :options="options"
                       label="Animation"
-                    />
+                    ></q-select>
+
+                     <q-file
+            v-else
+            filled
+            dense
+            capture="environment"
+            accept="image/jpeg, image/png"
+            :max-file-size="3*1024**2"
+            label="Small image (optional)"
+            clearable
+            @input="imageAdded"
+            @clear="imageCleared"
+          >
+            <template v-if="formDialogCopilot.data.image" v-slot:before>
+              <img style="height: 1em" :src="itemDialog.data.image" />
+            </template>
+            <template v-if="formDialogCopilot.data.image" v-slot:append>
+              <q-icon
+                name="cancel"
+                @click.stop.prevent="imageCleared"
+                class="cursor-pointer"
+              />
+            </template>
+            <q-tooltip>Upload small image</q-tooltip>
+          </q-file>
+
+
                   </div>
+
 
                   <div class="col q-pl-xs">
                     <q-input
@@ -241,6 +277,8 @@
                       min="10"
                     >
                     </q-input>
+
+
                   </div>
                   <div class="col q-pl-xs">
                     <q-input
@@ -263,20 +301,52 @@
             expand-separator
             label="Payment threshold 2 (Must be higher than last)"
           >
-            <q-card>
+        <q-card>
               <q-card-section>
-                <div
-                  class="row"
-                  v-if="formDialogCopilot.data.animation1threshold > 0"
-                >
+                <div class="row">
                   <div class="col">
+                         <q-toggle
+            :label="`${formDialogCopilot.toggle2 ? 'Select' : 'Upload'}`"
+            v-model="formDialogCopilot.toggle2"
+          ></q-toggle>       
+                  </div>
+                  <div class="col">
+
                     <q-select
+                    v-if="formDialogCopilot.toggle2"
                       filled
                       dense
                       v-model.trim="formDialogCopilot.data.animation2"
                       :options="options"
                       label="Animation"
-                    />
+                    ></q-select>
+
+                     <q-file
+            v-else
+            filled
+            dense
+            capture="environment"
+            accept="image/jpeg, image/png"
+            :max-file-size="3*1024**2"
+            label="Small image (optional)"
+            clearable
+            @input="imageAdded"
+            @clear="imageCleared"
+          >
+            <template v-if="formDialogCopilot.data.image2" v-slot:before>
+              <img style="height: 1em" :src="itemDialog.data.image2" />
+            </template>
+            <template v-if="formDialogCopilot.data.image2" v-slot:append>
+              <q-icon
+                name="cancel"
+                @click.stop.prevent="imageCleared"
+                class="cursor-pointer"
+              />
+            </template>
+            <q-tooltip>Upload small image</q-tooltip>
+          </q-file>
+
+
                   </div>
 
                   <div class="col q-pl-xs">
@@ -312,20 +382,52 @@
             expand-separator
             label="Payment threshold 3 (Must be higher than last)"
           >
-            <q-card>
+   <q-card>
               <q-card-section>
-                <div
-                  class="row"
-                  v-if="formDialogCopilot.data.animation2threshold > formDialogCopilot.data.animation1threshold"
-                >
+                <div class="row">
                   <div class="col">
+                         <q-toggle
+            :label="`${formDialogCopilot.toggle2 ? 'Select' : 'Upload'}`"
+            v-model="formDialogCopilot.toggle2"
+          ></q-toggle>       
+                  </div>
+                  <div class="col">
+
                     <q-select
+                    v-if="formDialogCopilot.toggle2"
                       filled
                       dense
-                      v-model.trim="formDialogCopilot.data.animation3"
+                      v-model.trim="formDialogCopilot.data.animation2"
                       :options="options"
                       label="Animation"
-                    />
+                    ></q-select>
+
+                     <q-file
+            v-else
+            filled
+            dense
+            capture="environment"
+            accept="image/jpeg, image/png"
+            :max-file-size="3*1024**2"
+            label="Small image (optional)"
+            clearable
+            @input="imageAdded"
+            @clear="imageCleared"
+          >
+            <template v-if="formDialogCopilot.data.image2" v-slot:before>
+              <img style="height: 1em" :src="itemDialog.data.image2" />
+            </template>
+            <template v-if="formDialogCopilot.data.image2" v-slot:append>
+              <q-icon
+                name="cancel"
+                @click.stop.prevent="imageCleared"
+                class="cursor-pointer"
+              />
+            </template>
+            <q-tooltip>Upload small image</q-tooltip>
+          </q-file>
+
+
                   </div>
 
                   <div class="col q-pl-xs">
@@ -461,6 +563,7 @@
           data: {}
         },
         formDialogCopilot: {
+          toggle: false,
           show: false,
           data: {
             lnurl_toggle: false,
