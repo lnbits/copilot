@@ -55,5 +55,5 @@ class Copilot(BaseModel):
     iframe_url: Optional[str]
 
     def lnurl(self, req: Request) -> str:
-        url = req.url_for("copilot.lnurl_response", cp_id=self.id)
+        url = str(req.url_for("copilot.lnurl_response", cp_id=self.id))
         return lnurl_encode(url)

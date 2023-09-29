@@ -24,7 +24,7 @@ async def lnurl_response(req: Request, cp_id: str):
 
     payResponse = {
         "tag": "payRequest",
-        "callback": req.url_for("copilot.lnurl_callback", cp_id=cp_id),
+        "callback": str(req.url_for("copilot.lnurl_callback", cp_id=cp_id)),
         "metadata": LnurlPayMetadata(json.dumps([["text/plain", str(cp.lnurl_title)]])),
         "maxSendable": 50000000,
         "minSendable": 10000,
