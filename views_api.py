@@ -3,7 +3,7 @@ from http import HTTPStatus
 from fastapi import Depends, Request
 from fastapi.exceptions import HTTPException
 
-from lnbits.core.services import websocketUpdater
+from lnbits.core.services import websocket_updater
 from lnbits.decorators import WalletTypeInfo, get_key_type, require_admin_key
 
 from . import copilot_ext
@@ -97,7 +97,7 @@ async def api_copilot_ws_relay(copilot_id: str, comment: str, data: str):
             status_code=HTTPStatus.NOT_FOUND, detail="Copilot does not exist"
         )
     try:
-        await websocketUpdater(copilot_id, str(data) + "-" + str(comment))
+        await websocket_updater(copilot_id, str(data) + "-" + str(comment))
     except:
         raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="Not your copilot")
     return ""

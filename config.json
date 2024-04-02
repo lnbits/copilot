@@ -3,6 +3,6 @@
   "short_description": "Video tips/animations/webhooks",
   "tile": "/copilot/static/bitcoin-streaming.png",
   "contributors": ["arcbtc"],
-  "min_lnbits_version": "0.11.0",
+  "min_lnbits_version": "0.12.5",
   "is_installed": true
 }
