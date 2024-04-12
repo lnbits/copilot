@@ -7,7 +7,7 @@ from fastapi.exceptions import HTTPException
 
 from lnbits.core import db as core_db
 from lnbits.core.models import Payment
-from lnbits.core.services import websocketUpdater
+from lnbits.core.services import websocket_updater
 from lnbits.helpers import get_current_extension_name
 from lnbits.tasks import register_invoice_listener
 
@@ -65,11 +65,11 @@ async def on_invoice_paid(payment: Payment) -> None:
             except (httpx.ConnectError, httpx.RequestError):
                 await mark_webhook_sent(payment, -1)
     if payment.extra.get("comment"):
-        await websocketUpdater(
+        await websocket_updater(
             copilot.id, str(data) + "-" + str(payment.extra.get("comment"))
         )
 
-    await websocketUpdater(copilot.id, str(data) + "-none")
+    await websocket_updater(copilot.id, str(data) + "-none")
 
 
 async def mark_webhook_sent(payment: Payment, status: int) -> None:
