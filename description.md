@@ -1,8 +1,7 @@
 Get tipped in your video streams and trigger events!
-Use in conjunction with OBS (Open Broadcaster), just connect the browser window.
+Use in conjunction with OBS (Open Broadcaster Software) by simply connecting the browser window.
 
-* Supports LNURLpay comments, so you can optionally enable paid comments on the screen
-* Iincludes optional troll box
-* Includes BTC prce ticker
-* Elements can be rearranged in the screen
-
+* Supports LNURLpay comments, allowing you to optionally enable paid comments on the screen.
+* Includes an optional troll box.
+* Features a BTC price ticker.
+* Elements can be rearranged on the screen.
