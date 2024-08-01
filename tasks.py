@@ -4,7 +4,6 @@ from http import HTTPStatus
 
 import httpx
 from fastapi.exceptions import HTTPException
-
 from lnbits.core import db as core_db
 from lnbits.core.models import Payment
 from lnbits.core.services import websocket_updater

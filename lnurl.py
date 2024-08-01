@@ -1,12 +1,12 @@
 import json
 from http import HTTPStatus
 
-from fastapi import Request, Query
-from lnurl.types import LnurlPayMetadata
+from fastapi import Query, Request
 from fastapi.exceptions import HTTPException
 from fastapi.responses import HTMLResponse
-
 from lnbits.core.services import create_invoice
+
+from lnurl.types import LnurlPayMetadata
 
 from . import copilot_ext
 from .crud import get_copilot

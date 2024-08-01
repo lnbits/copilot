@@ -1,7 +1,6 @@
 from fastapi import Depends, Request
-from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
-
+from fastapi.templating import Jinja2Templates
 from lnbits.core.models import User
 from lnbits.decorators import check_user_exists
 
@@ -29,6 +28,7 @@ async def panel(request: Request):
     return copilot_renderer().TemplateResponse(
         "copilot/panel.html", {"request": request}
     )
+
 
 @copilot_ext.get("/chat/{chat_id}", response_class=HTMLResponse)
 async def chat(request: Request, chat_id):

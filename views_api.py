@@ -2,7 +2,6 @@ from http import HTTPStatus
 
 from fastapi import Depends, Request
 from fastapi.exceptions import HTTPException
-
 from lnbits.core.services import websocket_updater
 from lnbits.decorators import WalletTypeInfo, get_key_type, require_admin_key
 
@@ -14,7 +13,7 @@ from .crud import (
     get_copilots,
     update_copilot,
 )
-from .models import CreateCopilotData, Copilot
+from .models import Copilot, CreateCopilotData
 
 #######################COPILOT##########################
 
