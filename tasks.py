@@ -1,10 +1,9 @@
 import asyncio
-import json
 from http import HTTPStatus
 
 import httpx
 from fastapi.exceptions import HTTPException
-from lnbits.core import db as core_db
+from lnbits.core.crud import update_payment_extra
 from lnbits.core.models import Payment
 from lnbits.core.services import websocket_updater
 from lnbits.helpers import get_current_extension_name
@@ -60,24 +59,14 @@ async def on_invoice_paid(payment: Payment) -> None:
                     },
                     timeout=40,
                 )
-                await mark_webhook_sent(payment, r.status_code)
+                payment.extra["wh_status"] = r.status_code
             except (httpx.ConnectError, httpx.RequestError):
-                await mark_webhook_sent(payment, -1)
+                payment.extra["wh_status"] = -1
+            finally:
+                await update_payment_extra(payment.payment_hash, payment.extra)
     if payment.extra.get("comment"):
         await websocket_updater(
             copilot.id, str(data) + "-" + str(payment.extra.get("comment"))
         )
 
     await websocket_updater(copilot.id, str(data) + "-none")
-
-
-async def mark_webhook_sent(payment: Payment, status: int) -> None:
-    if payment.extra:
-        payment.extra["wh_status"] = status
-        await core_db.execute(
-            """
-            UPDATE apipayments SET extra = ?
-            WHERE hash = ?
-            """,
-            (json.dumps(payment.extra), payment.payment_hash),
-        )
