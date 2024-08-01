@@ -1,11 +1,11 @@
 from typing import List, Optional
 
+from lnbits.db import Database
 from lnbits.helpers import urlsafe_short_hash
 
-from . import db
 from .models import Copilot, CreateCopilotData
 
-###############COPILOTS##########################
+db = Database("ext_copilot")
 
 
 async def create_copilot(data: CreateCopilotData, inkey: Optional[str] = "") -> Copilot:
