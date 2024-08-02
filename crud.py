@@ -1,16 +1,14 @@
 from typing import List, Optional
 
+from lnbits.db import Database
 from lnbits.helpers import urlsafe_short_hash
 
-from . import db
 from .models import Copilot, CreateCopilotData
 
-###############COPILOTS##########################
+db = Database("ext_copilot")
 
 
-async def create_copilot(
-    data: CreateCopilotData, inkey: Optional[str] = ""
-) -> Copilot:
+async def create_copilot(data: CreateCopilotData, inkey: Optional[str] = "") -> Copilot:
     copilot_id = urlsafe_short_hash()
     await db.execute(
         """
@@ -68,9 +66,7 @@ async def create_copilot(
     return copilot
 
 
-async def update_copilot(
-    data: CreateCopilotData, copilot_id: str
-) -> Copilot:
+async def update_copilot(data: CreateCopilotData, copilot_id: str) -> Copilot:
     q = ", ".join([f"{field[0]} = ?" for field in data])
     items = [f"{field[1]}" for field in data]
     items.append(copilot_id)

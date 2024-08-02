@@ -1,18 +1,18 @@
 import json
 from http import HTTPStatus
 
-from fastapi import Request, Query
-from lnurl.types import LnurlPayMetadata
+from fastapi import APIRouter, Query, Request
 from fastapi.exceptions import HTTPException
 from fastapi.responses import HTMLResponse
-
 from lnbits.core.services import create_invoice
+from lnurl.types import LnurlPayMetadata
 
-from . import copilot_ext
 from .crud import get_copilot
 
+copilot_lnurl_router = APIRouter()
 
-@copilot_ext.get(
+
+@copilot_lnurl_router.get(
     "/lnurl/{cp_id}", response_class=HTMLResponse, name="copilot.lnurl_response"
 )
 async def lnurl_response(req: Request, cp_id: str):
@@ -22,7 +22,7 @@ async def lnurl_response(req: Request, cp_id: str):
             status_code=HTTPStatus.NOT_FOUND, detail="Copilot not found"
         )
 
-    payResponse = {
+    pay_response = {
         "tag": "payRequest",
         "callback": str(req.url_for("copilot.lnurl_callback", cp_id=cp_id)),
         "metadata": LnurlPayMetadata(json.dumps([["text/plain", str(cp.lnurl_title)]])),
@@ -31,11 +31,11 @@ async def lnurl_response(req: Request, cp_id: str):
     }
 
     if cp.show_message:
-        payResponse["commentAllowed"] = 300
-    return json.dumps(payResponse)
+        pay_response["commentAllowed"] = 300
+    return json.dumps(pay_response)
 
 
-@copilot_ext.get(
+@copilot_lnurl_router.get(
     "/lnurl/cb/{cp_id}", response_class=HTMLResponse, name="copilot.lnurl_callback"
 )
 async def lnurl_callback(
@@ -51,30 +51,40 @@ async def lnurl_callback(
     if amount_received < 10000:
         raise HTTPException(
             status_code=HTTPStatus.FORBIDDEN,
-            detail="Amount {round(amount_received / 1000)} is smaller than minimum 10 sats.",
+            detail=(
+                "Amount {round(amount_received / 1000)} "
+                "is smaller than minimum 10 sats."
+            ),
         )
     elif amount_received / 1000 > 10000000:
         raise HTTPException(
             status_code=HTTPStatus.FORBIDDEN,
-            detail="Amount {round(amount_received / 1000)} is greater than maximum 50000.",
+            detail=(
+                "Amount {round(amount_received / 1000)} "
+                "is greater than maximum 50000."
+            ),
         )
     comment = ""
     if comment:
         if len(comment or "") > 300:
             raise HTTPException(
                 status_code=HTTPStatus.FORBIDDEN,
-                detail="Got a comment with {len(comment)} characters, but can only accept 300",
+                detail=(
+                    "Got a comment with {len(comment)} characters, "
+                    "but can only accept 300"
+                ),
             )
         if len(comment) < 1:
             comment = "none"
+    assert cp.wallet, "Copilot wallet not found"
     _, payment_request = await create_invoice(
         wallet_id=cp.wallet,
         amount=int(amount_received / 1000),
-        memo=cp.lnurl_title,
+        memo=cp.lnurl_title or "",
         unhashed_description=(
             LnurlPayMetadata(json.dumps([["text/plain", str(cp.lnurl_title)]]))
         ).encode(),
         extra={"tag": "copilot", "copilotid": cp.id, "comment": comment},
     )
-    payResponse = {"pr": payment_request, "routes": []}
-    return json.dumps(payResponse)
+    pay_response = {"pr": payment_request, "routes": []}
+    return json.dumps(pay_response)

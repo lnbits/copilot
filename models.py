@@ -1,9 +1,8 @@
 from typing import Optional
-from fastapi import Query, Request
-from lnurl.types import LnurlPayMetadata
-from pydantic import BaseModel
 
-from lnbits.lnurl import encode as lnurl_encode
+from fastapi import Query, Request
+from lnurl import encode as lnurl_encode
+from pydantic import BaseModel
 
 
 class CreateCopilotData(BaseModel):
