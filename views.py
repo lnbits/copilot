@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
 from lnbits.core.models import User
 from lnbits.decorators import check_user_exists
 from lnbits.helpers import template_renderer
@@ -10,9 +9,6 @@ copilot_generic_router: APIRouter = APIRouter()
 
 def copilot_renderer():
     return template_renderer(["copilot/templates"])
-
-
-templates = Jinja2Templates(directory="templates")
 
 
 @copilot_generic_router.get("/", response_class=HTMLResponse)
