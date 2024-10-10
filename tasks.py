@@ -1,13 +1,12 @@
 import asyncio
-from http import HTTPStatus
 
 import httpx
-from fastapi.exceptions import HTTPException
 from lnbits.core.crud import update_payment_extra
 from lnbits.core.models import Payment
 from lnbits.core.services import websocket_updater
 from lnbits.helpers import get_current_extension_name
 from lnbits.tasks import register_invoice_listener
+from loguru import logger
 
 from .crud import get_copilot
 
@@ -22,18 +21,18 @@ async def wait_for_paid_invoices():
 
 
 async def on_invoice_paid(payment: Payment) -> None:
-    if payment.extra.get("tag") != "copilot":
+    if not payment.extra or payment.extra.get("tag") != "copilot":
         # not an copilot invoice
         return
 
     webhook = None
     data = None
     copilot = await get_copilot(payment.extra.get("copilotid", -1))
-
     if not copilot:
-        raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail="Copilot does not exist"
+        logger.warning(
+            f"Received payment for unknown copilot {payment.extra.get('copilotid')}"
         )
+        return
     if copilot.animation1threshold:
         if int(payment.amount / 1000) >= copilot.animation1threshold:
             data = copilot.animation1
@@ -59,6 +58,7 @@ async def on_invoice_paid(payment: Payment) -> None:
                     },
                     timeout=40,
                 )
+                r.raise_for_status()
                 payment.extra["wh_status"] = r.status_code
             except (httpx.ConnectError, httpx.RequestError):
                 payment.extra["wh_status"] = -1
