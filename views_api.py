@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.exceptions import HTTPException
 from lnbits.core.models import WalletTypeInfo
 from lnbits.core.services import websocket_updater
-from lnbits.decorators import get_key_type, require_admin_key
+from lnbits.decorators import require_admin_key, require_invoice_key
 
 from .crud import (
     create_copilot,
@@ -19,19 +19,14 @@ copilot_api_router = APIRouter()
 
 
 @copilot_api_router.get("/api/v1/copilot")
-async def api_copilots_retrieve(wallet: WalletTypeInfo = Depends(get_key_type)):
+async def api_copilots_retrieve(wallet: WalletTypeInfo = Depends(require_admin_key)):
     wallet_user = wallet.wallet.user
-    copilots = [copilot.dict() for copilot in await get_copilots(wallet_user)]
-    try:
-        return copilots
-    except Exception as exc:
-        raise HTTPException(
-            status_code=HTTPStatus.NO_CONTENT, detail="No copilots"
-        ) from exc
+    copilots = await get_copilots(wallet_user)
+    return copilots
 
 
 @copilot_api_router.get(
-    "/api/v1/copilot/{copilot_id}", dependencies=[Depends(get_key_type)]
+    "/api/v1/copilot/{copilot_id}", dependencies=[Depends(require_invoice_key)]
 )
 async def api_copilot_retrieve(
     req: Request,
@@ -54,7 +49,7 @@ async def api_copilot_create(
 ) -> Copilot:
     data.user = wallet.wallet.user
     data.wallet = wallet.wallet.id
-    return await create_copilot(data, inkey=wallet.wallet.inkey)
+    return await create_copilot(data)
 
 
 @copilot_api_router.put("/api/v1/copilot/{copilot_id}")
@@ -71,25 +66,23 @@ async def api_copilot_update(
 
     data.user = wallet.wallet.user
     data.wallet = wallet.wallet.id
-    return await update_copilot(data, copilot_id=copilot_id)
+    for key, value in data.dict().items():
+        if value:
+            setattr(copilot, key, value)
+    return await update_copilot(copilot)
 
 
 @copilot_api_router.delete(
     "/api/v1/copilot/{copilot_id}", dependencies=[Depends(require_admin_key)]
 )
-async def api_copilot_delete(
-    copilot_id: str,
-):
+async def api_copilot_delete(copilot_id: str) -> None:
     copilot = await get_copilot(copilot_id)
-
     if not copilot:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND, detail="Copilot does not exist"
         )
 
     await delete_copilot(copilot_id)
-
-    return "", HTTPStatus.NO_CONTENT
 
 
 @copilot_api_router.get("/api/v1/copilot/ws/{copilot_id}/{comment}/{data}")
@@ -100,7 +93,7 @@ async def api_copilot_ws_relay(copilot_id: str, comment: str, data: str):
             status_code=HTTPStatus.NOT_FOUND, detail="Copilot does not exist"
         )
     try:
-        await websocket_updater(copilot_id, str(data) + "-" + str(comment))
+        await websocket_updater(copilot_id, f"{data} - {comment}")
     except Exception as exc:
         raise HTTPException(
             status_code=HTTPStatus.FORBIDDEN, detail="Not your copilot"
