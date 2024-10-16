@@ -1,7 +1,7 @@
 import asyncio
 
 import httpx
-from lnbits.core.crud import update_payment_extra
+from lnbits.core.crud import update_payment
 from lnbits.core.models import Payment
 from lnbits.core.services import websocket_updater
 from lnbits.helpers import get_current_extension_name
@@ -63,7 +63,7 @@ async def on_invoice_paid(payment: Payment) -> None:
             except (httpx.ConnectError, httpx.RequestError):
                 payment.extra["wh_status"] = -1
             finally:
-                await update_payment_extra(payment.payment_hash, payment.extra)
+                await update_payment(payment)
     if payment.extra.get("comment"):
         await websocket_updater(
             copilot.id, str(data) + "-" + str(payment.extra.get("comment"))
