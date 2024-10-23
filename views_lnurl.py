@@ -35,9 +35,7 @@ async def lnurl_response(req: Request, cp_id: str):
     return json.dumps(pay_response)
 
 
-@copilot_lnurl_router.get(
-    "/lnurl/cb/{cp_id}", response_class=HTMLResponse, name="copilot.lnurl_callback"
-)
+@copilot_lnurl_router.get("/lnurl/cb/{cp_id}", name="copilot.lnurl_callback")
 async def lnurl_callback(
     cp_id: str, amount: str = Query(None), comment: str = Query(None)
 ):
@@ -77,7 +75,7 @@ async def lnurl_callback(
         if len(comment) < 1:
             comment = "none"
     assert cp.wallet, "Copilot wallet not found"
-    _, payment_request = await create_invoice(
+    payment = await create_invoice(
         wallet_id=cp.wallet,
         amount=int(amount_received / 1000),
         memo=cp.lnurl_title or "",
@@ -86,5 +84,4 @@ async def lnurl_callback(
         ).encode(),
         extra={"tag": "copilot", "copilotid": cp.id, "comment": comment},
     )
-    pay_response = {"pr": payment_request, "routes": []}
-    return json.dumps(pay_response)
+    return {"pr": payment.bolt11, "routes": []}

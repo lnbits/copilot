@@ -363,7 +363,7 @@
       this.connection = new WebSocket(localUrl)
       this.connection.onmessage = e => {
         console.log(e)
-        res = e.data.split('-')
+        res = e.data.replace(' ', '').split('-')
         if (res[0] == 'rocket') {
           addTask(['40%', '/copilot/static/rocket.gif', res[1]])
         }
