@@ -38,10 +38,10 @@
         <q-table
           flat
           dense
-          :rows="CopilotLinks"
+          :rows="copilotLinks"
           row-key="id"
-          :columns="CopilotsTable.columns"
-          v-model:pagination="CopilotsTable.pagination"
+          :columns="copilotsTable.columns"
+          v-model:pagination="copilotsTable.pagination"
           :filter="filter"
         >
           <template v-slot:header="props">

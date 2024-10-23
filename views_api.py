@@ -19,7 +19,7 @@ copilot_api_router = APIRouter()
 
 
 @copilot_api_router.get("/api/v1/copilot")
-async def api_copilots_retrieve(wallet: WalletTypeInfo = Depends(require_admin_key)):
+async def api_copilots_retrieve(wallet: WalletTypeInfo = Depends(require_invoice_key)):
     wallet_user = wallet.wallet.user
     copilots = await get_copilots(wallet_user)
     return copilots

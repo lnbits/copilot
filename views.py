@@ -14,7 +14,7 @@ def copilot_renderer():
 @copilot_generic_router.get("/", response_class=HTMLResponse)
 async def index(request: Request, user: User = Depends(check_user_exists)):
     return copilot_renderer().TemplateResponse(
-        "copilot/index.html", {"request": request, "user": user.dict()}
+        "copilot/index.html", {"request": request, "user": user.json()}
     )
 
 

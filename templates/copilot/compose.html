@@ -74,14 +74,15 @@
   >
     <div class="col">
       <a class="text-secondary" :href="'lightning:' + copilot.lnurl">
-        <qrcode
+        <lnbits-qrcode
           :value="'lightning:' + copilot.lnurl"
-          :options="{width:250}"
           class="rounded-borders"
-        ></qrcode>
-        <center class="absolute-bottom" style="color: black; font-size: 20px">
-          {% raw %}{{ copilot.lnurl_title }}{% endraw %}
-        </center>
+        ></lnbits-qrcode>
+        <center
+          class="absolute-bottom"
+          style="color: black; font-size: 20px"
+          v-text="copilot.lnurl_title"
+        ></center>
       </a>
     </div>
   </div>
@@ -96,9 +97,8 @@
       text-shadow: 4px 8px 4px black;
       color: white;
     "
-  >
-    {% raw %}{{ price }}{% endraw %}
-  </h2>
+    v-text="price"
+  ></h2>
 
   <p
     v-if="copilot.show_ack != 0"
