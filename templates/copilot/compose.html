@@ -20,14 +20,12 @@
     style="width: 350px; height: 500px; margin-top: 10%; float: right"
   >
     <q-card-section>
-      {% raw %}
       <div class="row">
         <div class="col" style="max-width: 100px">
-          <qrcode
+          <lnbits-qrcode
             :value="chatUrl"
-            :options="{width:100}"
             class="rounded-borders"
-          ></qrcode>
+          ></lnbits-qrcode>
         </div>
         <div class="col">
           <div class="text-h6 q-ml-md">Trollbox</div>
@@ -36,8 +34,8 @@
             class="text-white"
             style="color: #43a047"
             target="_blank"
-            ><p class="q-ml-md">{{chatLink}}</p></a
-          >
+            ><p class="q-ml-md" v-text="chatLink"></p
+          ></a>
         </div>
       </div>
     </q-card-section>
@@ -57,10 +55,8 @@
         <p
           v-for="troll in chatCompute"
           style="margin-bottom: 5px; word-wrap: break-word"
-        >
-          {{troll}}
-        </p>
-        {% endraw %}
+          v-text="troll"
+        ></p>
       </div>
     </q-card-actions>
   </q-card>
@@ -78,14 +74,15 @@
   >
     <div class="col">
       <a class="text-secondary" :href="'lightning:' + copilot.lnurl">
-        <qrcode
+        <lnbits-qrcode
           :value="'lightning:' + copilot.lnurl"
-          :options="{width:250}"
           class="rounded-borders"
-        ></qrcode>
-        <center class="absolute-bottom" style="color: black; font-size: 20px">
-          {% raw %}{{ copilot.lnurl_title }}{% endraw %}
-        </center>
+        ></lnbits-qrcode>
+        <center
+          class="absolute-bottom"
+          style="color: black; font-size: 20px"
+          v-text="copilot.lnurl_title"
+        ></center>
       </a>
     </div>
   </div>
@@ -100,9 +97,8 @@
       text-shadow: 4px 8px 4px black;
       color: white;
     "
-  >
-    {% raw %}{{ price }}{% endraw %}
-  </h2>
+    v-text="price"
+  ></h2>
 
   <p
     v-if="copilot.show_ack != 0"
@@ -152,9 +148,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 <script>
-  Vue.component(VueQrcode.name, VueQrcode)
-
-  new Vue({
+  window.app = Vue.createApp({
     el: '#vue',
     mixins: [windowMixin],
     data() {
@@ -174,15 +168,15 @@
       }
     },
     computed: {
-      chatCompute: function () {
-        return self.trollbox
+      chatCompute() {
+        return this.trollbox
       }
     },
     methods: {
-      showNotif: function (userMessage) {
-        var colour =
+      showNotif(userMessage) {
+        const colour =
           this.colours[Math.floor(Math.random() * this.colours.length)]
-        this.$q.notify({
+        Quasar.Notify.create({
           color: colour,
           icon: 'chat_bubble_outline',
           html: true,
@@ -191,65 +185,60 @@
           timeout: 5000
         })
       },
-      openURL: function (url) {
+      openURL(url) {
         return Quasar.utils.openURL(url)
       },
       initCamera() {
-        var video = document.querySelector('#videoCamera')
+        const video = document.querySelector('#videoCamera')
 
         if (navigator.mediaDevices.getUserMedia) {
           navigator.mediaDevices
             .getUserMedia({video: true})
-            .then(function (stream) {
+            .then(stream => {
               video.srcObject = stream
             })
-            .catch(function (err0r) {
-              console.log('Something went wrong!')
-            })
+            .catch(LNbits.utils.notifyApiError)
         }
       },
       initScreenShare() {
-        var video = document.querySelector('#videoScreen')
+        const video = document.querySelector('#videoScreen')
         navigator.mediaDevices
           .getDisplayMedia({video: true})
-          .then(function (stream) {
+          .then(stream => {
             video.srcObject = stream
           })
-          .catch(function (err0r) {
-            console.log('Something went wrong!')
-          })
+          .catch(LNbits.utils.notifyApiError)
       },
       initTrollBox() {
-        self = this
-        self.troll_box = !self.troll_box
+        this.troll_box = !this.troll_box
         if (location.protocol !== 'http:') {
-          self.chatUrl =
+          this.chatUrl =
             'wss://' +
             document.domain +
             ':' +
             location.port +
             '/api/v1/ws/' +
-            self.chat_id
+            this.chat_id
         } else {
-          self.chatUrl =
+          this.chatUrl =
             'ws://' +
             document.domain +
             ':' +
             location.port +
             '/api/v1/ws/' +
-            self.chat_id
+            this.chat_id
         }
-        this.connectionchat = new WebSocket(self.chatUrl)
-        this.connectionchat.onmessage = function (e) {
+        this.connectionchat = new WebSocket(this.chatUrl)
+        this.connectionchat.onmessage = e => {
           res = e.data.split('-')
           if (res[0].length < 1 || res[1].length < 1) {
             return
           }
           comment = res[0].toUpperCase() + ': ' + res[1]
-          if (self.trollbox.length > 50) {
-            self.trollbox.pop()
+          if (this.trollbox.length > 50) {
+            this.trollbox.pop()
           }
-          self.trollbox.unshift(comment)
+          this.trollbox.unshift(comment)
         }
         this.connectionchat.onopen = () => this.launch
       },
@@ -257,52 +246,48 @@
         document.getElementById('animations').style.width = content[0]
         document.getElementById('animations').src = content[1]
         if (content[2] != 'none') {
-          self.showNotif(content[2])
+          this.showNotif(content[2])
         }
-        setTimeout(function () {
+        setTimeout(() => {
           document.getElementById('animations').src = ''
         }, 5000)
       },
       launch() {
-        self = this
         LNbits.api
           .request(
             'GET',
             '/copilot/api/v1/copilot/ws/' +
-              self.copilot.id +
+              this.copilot.id +
               '/launching/rocket'
           )
-          .then(function (response1) {
-            self.$q.notify({
+          .then(response1 => {
+            Quasar.Notify.create({
               color: 'green',
               message: 'Sent!'
             })
           })
-          .catch(err => {
-            LNbits.utils.notifyApiError(err)
-          })
+          .catch(LNbits.utils.notifyApiError)
       }
     },
     mounted() {
       this.initCamera()
     },
-    created: function () {
-      $(function () {
+    created() {
+      $(() => {
         $('#draggableqr').draggable()
         $('#draggableprice').draggable()
         $('#draggabletroll').draggable()
         $('#videoCamera').draggable()
-      }),
-        (self = this)
-      self.copilot = JSON.parse(localStorage.getItem('copilot'))
+      })
+      this.copilot = JSON.parse(localStorage.getItem('copilot'))
       LNbits.api
         .request(
           'GET',
-          '/copilot/api/v1/copilot/' + self.copilot.id,
+          '/copilot/api/v1/copilot/' + this.copilot.id,
           localStorage.getItem('inkey')
         )
-        .then(function (response) {
-          self.copilot = response.data
+        .then(response => {
+          this.copilot = response.data
         })
         .catch(err => {
           LNbits.utils.notifyApiError(err)
@@ -312,27 +297,27 @@
 
       const obj = JSON.stringify({
         event: 'bts:subscribe',
-        data: {channel: 'live_trades_' + self.copilot.show_price}
+        data: {channel: 'live_trades_' + this.copilot.show_price}
       })
 
-      this.connectionBitStamp.onmessage = function (e) {
-        if (self.copilot.show_price) {
-          if (self.copilot.show_price == 'btcusd') {
-            self.price = String(
+      this.connectionBitStamp.onmessage = e => {
+        if (this.copilot.show_price) {
+          if (this.copilot.show_price == 'btcusd') {
+            this.price = String(
               new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: 'USD'
               }).format(JSON.parse(e.data).data.price)
             )
-          } else if (self.copilot.show_price == 'btceur') {
-            self.price = String(
+          } else if (this.copilot.show_price == 'btceur') {
+            this.price = String(
               new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: 'EUR'
               }).format(JSON.parse(e.data).data.price)
             )
-          } else if (self.copilot.show_price == 'btcgbp') {
-            self.price = String(
+          } else if (this.copilot.show_price == 'btcgbp') {
+            this.price = String(
               new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: 'GBP'
@@ -365,7 +350,7 @@
           ':' +
           location.port +
           '/api/v1/ws/' +
-          self.copilot.id
+          this.copilot.id
       } else {
         localUrl =
           'ws://' +
@@ -373,12 +358,12 @@
           ':' +
           location.port +
           '/api/v1/ws/' +
-          self.copilot.id
+          this.copilot.id
       }
       this.connection = new WebSocket(localUrl)
-      this.connection.onmessage = function (e) {
+      this.connection.onmessage = e => {
         console.log(e)
-        res = e.data.split('-')
+        res = e.data.replace(' ', '').split('-')
         if (res[0] == 'rocket') {
           addTask(['40%', '/copilot/static/rocket.gif', res[1]])
         }
@@ -398,16 +383,16 @@
           addTask(['40%', '/copilot/static/rick.gif', res[1]])
         }
         if (res[0] == 'trollbox') {
-          self.chat_id = res[1]
-          self.chatLink = '/copilot/chat/' + self.chat_id
-          self.initTrollBox()
+          this.chat_id = res[1]
+          this.chatLink = '/copilot/chat/' + this.chat_id
+          this.initTrollBox()
         }
         if (res[0] == 'trollboxchat') {
           this.trollbox.push(res[1])
         }
         if (res[0] == 'true') {
           document.getElementById('videoCamera').style.width = '20%'
-          self.initScreenShare()
+          this.initScreenShare()
         }
         if (res[0] == 'false') {
           document.getElementById('videoCamera').style.width = '100%'

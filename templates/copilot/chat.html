@@ -49,10 +49,10 @@
 </q-page>
 {% endblock %} {% block scripts %}
 <script>
-  new Vue({
+  window.app = Vue.createApp({
     el: '#vue',
     mixins: [windowMixin],
-    data: function () {
+    data() {
       return {
         name: '',
         newMessage: '',
@@ -61,56 +61,50 @@
       }
     },
     methods: {
-      sendMessage: function (message) {
-        self = this
+      sendMessage(message) {
         LNbits.api
           .request(
             'GET',
             '/api/v1/ws/{{chat_id}}/' + this.name + '-' + this.newMessage
           )
-          .then(function (response1) {
-            self.newMessage = ''
-            self.$q.notify({
+          .then(response1 => {
+            this.newMessage = ''
+            Quasar.Notify.create({
               color: 'green',
               message: 'Sent!'
             })
           })
-          .catch(err => {
-            LNbits.utils.notifyApiError(err)
-          })
+          .catch(LNbits.utils.notifyApiError)
       },
       initTrollBox() {
-        self = this
-        self.troll_box = !self.troll_box
-        console.log(self.troll_box)
+        this.troll_box = !this.troll_box
 
         if (location.protocol !== 'http:') {
-          self.chatUrl =
+          this.chatUrl =
             'wss://' +
             document.domain +
             ':' +
             location.port +
             '/api/v1/ws/' +
-            self.chat_id
+            this.chat_id
         } else {
-          self.chatUrl =
+          this.chatUrl =
             'ws://' +
             document.domain +
             ':' +
             location.port +
             '/api/v1/ws/' +
-            self.chat_id
+            this.chat_id
         }
-        this.connectionchat = new WebSocket(self.chatUrl)
-        this.connectionchat.onmessage = function (e) {
+        this.connectionchat = new WebSocket(this.chatUrl)
+        this.connectionchat.onmessage = e => {
           this.trollbox.push(e.data)
         }
         this.connectionchat.onopen = () => this.launch
       }
     },
-    created: function () {
-      self = this
-      self.initTrollBox()
+    created() {
+      this.initTrollBox()
     }
   })
 </script>

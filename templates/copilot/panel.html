@@ -16,7 +16,7 @@
       </div>
       <center>
         <div class="col" style="margin: 15px; font-size: 22px">
-          Title: {% raw %} {{ copilot.title }} {% endraw %}
+          Title: <span v-text="copilot.title"></span>
         </div>
       </center>
       <q-separator></q-separator>
@@ -104,9 +104,7 @@
 
 {% endblock %} {% block scripts %}
 <script>
-  Vue.component(VueQrcode.name, VueQrcode)
-
-  new Vue({
+  window.app = Vue.createApp({
     el: '#vue',
     mixins: [windowMixin],
     data() {
@@ -119,32 +117,30 @@
       }
     },
     methods: {
-      iframeChange: function (url) {
+      iframeChange(url) {
         this.connection.send(String(url))
       },
-      fullscreenToggle: function () {
-        self = this
-        self.animationBTN(String(this.fullscreen_cam))
+      fullscreenToggle() {
+        this.animationBTN(String(this.fullscreen_cam))
         if (this.fullscreen_cam) {
           this.fullscreen_cam = false
         } else {
           this.fullscreen_cam = true
         }
       },
-      openCompose: function () {
+      openCompose() {
         let params =
           'scrollbars=no, resizable=no,status=no,location=no,toolbar=no,menubar=no,width=1200,height=644,left=410,top=100'
         open('../cp/', 'test', params)
       },
-      animationBTN: function (name) {
-        self = this
+      animationBTN(name) {
         LNbits.api
           .request(
             'GET',
-            '/copilot/api/v1/copilot/ws/' + self.copilot.id + '/none/' + name
+            '/copilot/api/v1/copilot/ws/' + this.copilot.id + '/none/' + name
           )
-          .then(function (response1) {
-            self.$q.notify({
+          .then(response1 => {
+            Quasar.Notify.create({
               color: 'green',
               message: 'Sent!'
             })
@@ -153,19 +149,18 @@
             LNbits.utils.notifyApiError(err)
           })
       },
-      launchChat: function () {
-        self = this
+      launchChat() {
         LNbits.api
           .request(
             'GET',
             '/copilot/api/v1/copilot/ws/' +
-              self.copilot.id +
+              this.copilot.id +
               '/' +
               this.chatId +
               '/trollbox'
           )
-          .then(function (response1) {
-            self.$q.notify({
+          .then(response1 => {
+            Quasar.Notify.create({
               color: 'green',
               message: 'Sent!'
             })
@@ -175,9 +170,8 @@
           })
       }
     },
-    created: function () {
-      self = this
-      self.copilot = JSON.parse(localStorage.getItem('copilot'))
+    created() {
+      this.copilot = JSON.parse(localStorage.getItem('copilot'))
     }
   })
 </script>
