@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse
 from lnbits.core.models import User
 from lnbits.decorators import check_user_exists
 from lnbits.helpers import template_renderer
+from ...utils.exchange_rates import allowed_currencies
 
 copilot_generic_router: APIRouter = APIRouter()
 
@@ -14,7 +15,7 @@ def copilot_renderer():
 @copilot_generic_router.get("/", response_class=HTMLResponse)
 async def index(request: Request, user: User = Depends(check_user_exists)):
     return copilot_renderer().TemplateResponse(
-        "copilot/index.html", {"request": request, "user": user.json()}
+        "copilot/index.html", {"request": request, "user": user.json(), "currencies": allowed_currencies()}
     )
 
 
