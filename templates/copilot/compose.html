@@ -1,18 +1,40 @@
 {% extends "public.html" %} {% block page %}<q-page>
-  <video autoplay="true" id="videoScreen" style="width: 100%" class="fixed-bottom-right"></video>
-  <video autoplay="true" id="videoCamera" style="width: 100%" class="fixed-bottom-right"></video>
+  <video
+    autoplay="true"
+    id="videoScreen"
+    style="width: 100%"
+    class="fixed-bottom-right"
+  ></video>
+  <video
+    autoplay="true"
+    id="videoCamera"
+    style="width: 100%"
+    class="fixed-bottom-right"
+  ></video>
   <img src="" style="width: 100%" id="animations" class="fixed-bottom-left" />
 
-  <q-card id="draggabletroll" v-show="troll_box" class="rounded-borders bg-dark"
-    style="width: 350px; height: 500px; margin-top: 10%; float: right">
+  <q-card
+    id="draggabletroll"
+    v-show="troll_box"
+    class="rounded-borders bg-dark"
+    style="width: 350px; height: 500px; margin-top: 10%; float: right"
+  >
     <q-card-section>
       <div class="row">
         <div class="col" style="max-width: 100px">
-          <lnbits-qrcode :value="chatUrl" class="rounded-borders"></lnbits-qrcode>
+          <lnbits-qrcode
+            :value="chatUrl"
+            class="rounded-borders"
+          ></lnbits-qrcode>
         </div>
         <div class="col">
           <div class="text-h6 q-ml-md">Trollbox</div>
-          <a :href="chatLink" class="text-white" style="color: #43a047" target="_blank">
+          <a
+            :href="chatLink"
+            class="text-white"
+            style="color: #43a047"
+            target="_blank"
+          >
             <p class="q-ml-md" v-text="chatLink"></p>
           </a>
         </div>
@@ -22,44 +44,73 @@
     <q-separator dark inset></q-separator>
 
     <q-card-actions>
-      <div class="absolute-bottom q-ml-md q-mb-xs" style="
+      <div
+        class="absolute-bottom q-ml-md q-mb-xs"
+        style="
           max-height: 360px;
           overflow: auto;
           display: flex;
           flex-direction: column-reverse;
-        ">
-        <p v-for="troll in chatCompute" style="margin-bottom: 5px; word-wrap: break-word" v-text="troll"></p>
+        "
+      >
+        <p
+          v-for="troll in chatCompute"
+          style="margin-bottom: 5px; word-wrap: break-word"
+          v-text="troll"
+        ></p>
       </div>
     </q-card-actions>
   </q-card>
 
-  <div v-if="copilot.lnurl_toggle == 1" id="draggableqr" class="rounded-borders" style="
+  <div
+    v-if="copilot.lnurl_toggle == 1"
+    id="draggableqr"
+    class="rounded-borders"
+    style="
       width: 250px;
       background-color: white;
       height: 300px;
       margin-top: 10%;
-    ">
+    "
+  >
     <div class="col">
       <a class="text-secondary" :href="'lightning:' + copilot.lnurl">
-        <lnbits-qrcode :value="'lightning:' + copilot.lnurl" class="rounded-borders"></lnbits-qrcode>
-        <center class="absolute-bottom" style="color: black; font-size: 20px" v-text="copilot.lnurl_title"></center>
+        <lnbits-qrcode
+          :value="'lightning:' + copilot.lnurl"
+          class="rounded-borders"
+        ></lnbits-qrcode>
+        <center
+          class="absolute-bottom"
+          style="color: black; font-size: 20px"
+          v-text="copilot.lnurl_title"
+        ></center>
       </a>
     </div>
   </div>
 
-  <h2 id="draggableprice" v-if="copilot.show_price != 0" class="text-bold" style="
+  <h2
+    id="draggableprice"
+    v-if="copilot.show_price != 0"
+    class="text-bold"
+    style="
       margin: 60px 60px;
       font-size: 110px;
       text-shadow: 4px 8px 4px black;
       color: white;
-    " v-text="price"></h2>
+    "
+    v-text="price"
+  ></h2>
 
-  <p v-if="copilot.show_ack != 0" class="fixed-top" style="
+  <p
+    v-if="copilot.show_ack != 0"
+    class="fixed-top"
+    style="
       font-size: 22px;
       text-shadow: 2px 4px 1px black;
       color: white;
       padding-left: 40%;
-    ">
+    "
+  >
     Powered by LNbits/StreamerCopilot
   </p>
 </q-page>
@@ -148,7 +199,7 @@
 
         if (navigator.mediaDevices.getUserMedia) {
           navigator.mediaDevices
-            .getUserMedia({ video: true })
+            .getUserMedia({video: true})
             .then(stream => {
               video.srcObject = stream
             })
@@ -158,7 +209,7 @@
       initScreenShare() {
         const video = document.querySelector('#videoScreen')
         navigator.mediaDevices
-          .getDisplayMedia({ video: true })
+          .getDisplayMedia({video: true})
           .then(stream => {
             video.srcObject = stream
           })
@@ -210,16 +261,22 @@
       getFiat() {
         if (this.copilot.show_price) {
           LNbits.api
-              .request('GET', `/api/v1/rate/` + this.copilot.show_price, null)
-              .then(response => {
-                this.price = LNbits.utils.formatCurrency(response.data.price.toFixed(2), this.copilot.show_price)
-              })
-              .catch(e => console.error(e))
+            .request('GET', `/api/v1/rate/` + this.copilot.show_price, null)
+            .then(response => {
+              this.price = LNbits.utils.formatCurrency(
+                response.data.price.toFixed(2),
+                this.copilot.show_price
+              )
+            })
+            .catch(e => console.error(e))
           this.fiatInterval = setInterval(() => {
             LNbits.api
               .request('GET', `/api/v1/rate/` + this.copilot.show_price, null)
               .then(response => {
-                this.price = LNbits.utils.formatCurrency(response.data.price.toFixed(2), this.copilot.show_price)
+                this.price = LNbits.utils.formatCurrency(
+                  response.data.price.toFixed(2),
+                  this.copilot.show_price
+                )
               })
               .catch(e => console.error(e))
           }, 30000)
@@ -230,8 +287,8 @@
           .request(
             'GET',
             '/copilot/api/v1/copilot/ws/' +
-            this.copilot.id +
-            '/launching/rocket'
+              this.copilot.id +
+              '/launching/rocket'
           )
           .then(response1 => {
             Quasar.Notify.create({

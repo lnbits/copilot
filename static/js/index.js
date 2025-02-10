@@ -76,7 +76,6 @@ window.app = Vue.createApp({
         data: null
       },
       options: ['bitcoin', 'confetti', 'rocket', 'face', 'martijn', 'rick'],
-     // currencyOptions: ['None', 'btcusd', 'btceur', 'btcgbp'],
       currencyOptions: ['sat', ...window.currencies]
     }
   },
