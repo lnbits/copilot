@@ -4,7 +4,7 @@ from lnbits.core.models import User
 from lnbits.decorators import check_user_exists
 from lnbits.helpers import template_renderer
 
-from ...utils.exchange_rates import allowed_currencies
+from lnbits.utils.exchange_rates import allowed_currencies
 
 copilot_generic_router: APIRouter = APIRouter()
 
