@@ -1,5 +1,4 @@
-from fastapi import Query, Request
-from lnurl import encode as lnurl_encode
+from fastapi import Query
 from pydantic import BaseModel
 
 
@@ -32,7 +31,7 @@ class Copilot(BaseModel):
     user: str | None
     title: str
     lnurl_toggle: int
-    wallet: str | None
+    wallet: str
     animation1: str | None
     animation2: str | None
     animation3: str | None
@@ -50,7 +49,3 @@ class Copilot(BaseModel):
     timestamp: int
     fullscreen_cam: int
     iframe_url: str | None
-
-    def lnurl(self, req: Request) -> str:
-        url = str(req.url_for("copilot.lnurl_response", cp_id=self.id))
-        return lnurl_encode(url)
