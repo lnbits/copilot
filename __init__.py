@@ -38,4 +38,4 @@ def copilot_start():
     scheduled_tasks.append(task)
 
 
-__all__ = ["copilot_ext", "copilot_static_files", "copilot_start", "copilot_stop", "db"]
+__all__ = ["copilot_ext", "copilot_start", "copilot_static_files", "copilot_stop", "db"]

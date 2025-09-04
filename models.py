@@ -1,5 +1,3 @@
-from typing import Optional
-
 from fastapi import Query, Request
 from lnurl import encode as lnurl_encode
 from pydantic import BaseModel
@@ -31,27 +29,27 @@ class CreateCopilotData(BaseModel):
 
 class Copilot(BaseModel):
     id: str
-    user: Optional[str]
+    user: str | None
     title: str
     lnurl_toggle: int
-    wallet: Optional[str]
-    animation1: Optional[str]
-    animation2: Optional[str]
-    animation3: Optional[str]
+    wallet: str | None
+    animation1: str | None
+    animation2: str | None
+    animation3: str | None
     animation1threshold: int
     animation2threshold: int
     animation3threshold: int
-    animation1webhook: Optional[str]
-    animation2webhook: Optional[str]
-    animation3webhook: Optional[str]
-    lnurl_title: Optional[str]
+    animation1webhook: str | None
+    animation2webhook: str | None
+    animation3webhook: str | None
+    lnurl_title: str | None
     show_message: int
     show_ack: int
-    show_price: Optional[str]
+    show_price: str | None
     amount_made: int
     timestamp: int
     fullscreen_cam: int
-    iframe_url: Optional[str]
+    iframe_url: str | None
 
     def lnurl(self, req: Request) -> str:
         url = str(req.url_for("copilot.lnurl_response", cp_id=self.id))
