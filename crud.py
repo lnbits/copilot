@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from lnbits.db import Database
 from lnbits.helpers import urlsafe_short_hash
 
@@ -20,7 +18,7 @@ async def update_copilot(copilot: Copilot) -> Copilot:
     return copilot
 
 
-async def get_copilot(copilot_id: str) -> Optional[Copilot]:
+async def get_copilot(copilot_id: str) -> Copilot | None:
     return await db.fetchone(
         "SELECT * FROM copilot.newer_copilots WHERE id = :id",
         {"id": copilot_id},
@@ -28,7 +26,7 @@ async def get_copilot(copilot_id: str) -> Optional[Copilot]:
     )
 
 
-async def get_copilots(user: str) -> List[Copilot]:
+async def get_copilots(user: str) -> list[Copilot]:
     return await db.fetchall(
         'SELECT * FROM copilot.newer_copilots WHERE "user" = :user',
         {"user": user},
