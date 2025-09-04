@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
 from lnbits.core.models import WalletTypeInfo
 from lnbits.core.services import websocket_updater
@@ -28,18 +28,14 @@ async def api_copilots_retrieve(wallet: WalletTypeInfo = Depends(require_invoice
 @copilot_api_router.get(
     "/api/v1/copilot/{copilot_id}", dependencies=[Depends(require_invoice_key)]
 )
-async def api_copilot_retrieve(
-    req: Request,
-    copilot_id: str,
-):
+async def api_copilot_retrieve(copilot_id: str) -> Copilot:
     copilot = await get_copilot(copilot_id)
     if not copilot:
         raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail="Copilot not found"
+            status_code=HTTPStatus.NOT_FOUND, detail="Copilot not found."
         )
-    if not copilot.lnurl_toggle:
-        return copilot
-    return {**copilot.dict(), **{"lnurl": copilot.lnurl(req)}}
+
+    return copilot
 
 
 @copilot_api_router.post("/api/v1/copilot")
