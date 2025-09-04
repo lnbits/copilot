@@ -32,7 +32,7 @@ class Copilot(BaseModel):
     user: str | None
     title: str
     lnurl_toggle: int
-    wallet: str | None
+    wallet: str
     animation1: str | None
     animation2: str | None
     animation3: str | None
