@@ -23,14 +23,15 @@
       <div class="row">
         <div class="col" style="max-width: 100px">
           <lnbits-qrcode
-            :value="chatUrl"
+            :value="fullChatLink"
             class="rounded-borders"
+            :show-buttons="false"
           ></lnbits-qrcode>
         </div>
         <div class="col">
           <div class="text-h6 q-ml-md">Trollbox</div>
           <a
-            :href="chatLink"
+            :href="fullChatLink"
             class="text-white"
             style="color: #43a047"
             target="_blank"
@@ -40,8 +41,6 @@
         </div>
       </div>
     </q-card-section>
-
-    <q-separator dark inset></q-separator>
 
     <q-card-actions>
       <div
@@ -78,6 +77,7 @@
         <lnbits-qrcode
           :value="'lightning:' + copilot.lnurl"
           class="rounded-borders"
+          :show-buttons="false"
         ></lnbits-qrcode>
         <center
           class="absolute-bottom"
@@ -318,6 +318,9 @@
         )
         .then(response => {
           this.copilot = response.data
+          const bytes = new TextEncoder().encode(this.copilot.lnurl)
+          const bech32 = NostrTools.nip19.encodeBytes('lnurl', bytes)
+          this.copilot.lnurl = bech32.toUpperCase()
         })
         .catch(err => {
           LNbits.utils.notifyApiError(err)
@@ -378,8 +381,10 @@
           addTask(['40%', '/copilot/static/rick.gif', res[1]])
         }
         if (res[0] == 'trollbox') {
-          this.chat_id = res[1]
+          this.chat_id = res[1].trim()
           this.chatLink = '/copilot/chat/' + this.chat_id
+          this.fullChatLink =
+            window.location.origin + '/copilot/chat/' + this.chat_id
           this.initTrollBox()
         }
         if (res[0] == 'trollboxchat') {
