@@ -22,7 +22,10 @@
     <q-card-section>
       <div class="row">
         <div class="col" style="max-width: 100px">
-          <lnbits-qrcode :value="chatUrl"></lnbits-qrcode>
+          <lnbits-qrcode
+            :value="chatUrl"
+            class="rounded-borders"
+          ></lnbits-qrcode>
         </div>
         <div class="col">
           <div class="text-h6 q-ml-md">Trollbox</div>
@@ -71,15 +74,17 @@
     "
   >
     <div class="col">
-      <lnbits-qrcode-lnurl
-        :url="url"
-        :show-buttons="false"
-      ></lnbits-qrcode-lnurl>
-      <center
-        class="absolute-bottom"
-        style="color: black; font-size: 20px"
-        v-text="copilot.lnurl_title"
-      ></center>
+      <a class="text-secondary" :href="'lightning:' + copilot.lnurl">
+        <lnbits-qrcode
+          :value="'lightning:' + copilot.lnurl"
+          class="rounded-borders"
+        ></lnbits-qrcode>
+        <center
+          class="absolute-bottom"
+          style="color: black; font-size: 20px"
+          v-text="copilot.lnurl_title"
+        ></center>
+      </a>
     </div>
   </div>
 
@@ -160,7 +165,7 @@
         copilot: {},
         animQueue: [],
         queue: false,
-        url: '',
+        lnurl: '',
         troll_box: false,
         trollbox: [],
         chatUrl: '',
@@ -313,8 +318,6 @@
         )
         .then(response => {
           this.copilot = response.data
-          this.url =
-            window.location.origin + '/copilot/lnurl/' + this.copilot.id
         })
         .catch(err => {
           LNbits.utils.notifyApiError(err)
