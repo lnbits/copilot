@@ -1,29 +1,33 @@
+from datetime import datetime, timezone
+
 from fastapi import Query
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class CreateCopilotData(BaseModel):
-    user: str = Query(None)
-    title: str = Query(None)
-    lnurl_toggle: int = Query(0)
-    wallet: str = Query(None)
-    animation1: str = Query(None)
-    animation2: str = Query(None)
-    animation3: str = Query(None)
-    animation1threshold: int = Query(0)
-    animation2threshold: int = Query(0)
-    animation3threshold: int = Query(0)
-    animation1webhook: str = Query(None)
-    animation2webhook: str = Query(None)
-    animation3webhook: str = Query(None)
-    lnurl_title: str = Query(None)
-    show_message: int = Query(0)
-    show_ack: int = Query(0)
-    show_price: str = Query(None)
-    amount_made: int = Query(0)
-    timestamp: int = Query(0)
-    fullscreen_cam: int = Query(0)
-    iframe_url: str = Query(None)
+    user: str | None = None
+    title: str | None = None
+    lnurl_toggle: int | None = 0
+    wallet: str | None = None
+    animation1: str | None = None
+    animation2: str | None = None
+    animation3: str | None = None
+    animation1threshold: int | None = 0
+    animation2threshold: int | None = 0
+    animation3threshold: int | None = 0
+    animation1webhook: str | None = None
+    animation2webhook: str | None = None
+    animation3webhook: str | None = None
+    lnurl_title: str | None = None
+    show_message: int | None = 0
+    show_ack: int | None = 0
+    show_price: str | None = None
+    amount_made: int | None = 0
+    timestamp: datetime | None = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+    fullscreen_cam: int | None = 0
+    iframe_url: str | None = None
 
 
 class Copilot(BaseModel):
@@ -46,6 +50,6 @@ class Copilot(BaseModel):
     show_ack: int
     show_price: str | None
     amount_made: int
-    timestamp: int
+    timestamp: datetime
     fullscreen_cam: int
     iframe_url: str | None

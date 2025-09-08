@@ -79,31 +79,21 @@
       initTrollBox() {
         this.troll_box = !this.troll_box
 
-        if (location.protocol !== 'http:') {
-          this.chatUrl =
-            'wss://' +
-            document.domain +
-            ':' +
-            location.port +
-            '/api/v1/ws/' +
-            this.chat_id
-        } else {
-          this.chatUrl =
-            'ws://' +
-            document.domain +
-            ':' +
-            location.port +
-            '/api/v1/ws/' +
-            this.chat_id
-        }
-        this.connectionchat = new WebSocket(this.chatUrl)
+        const url = new URL(window.location)
+        url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
+        url.pathname = `/api/v1/ws/${chatId}`
+
+        this.connectionchat = new WebSocket(url)
+        this.chatUrl = url.toString()
         this.connectionchat.onmessage = e => {
+          console.log(e.data)
           this.trollbox.push(e.data)
         }
         this.connectionchat.onopen = () => this.launch
       }
     },
     created() {
+      this.chatId = '{{ chat_id }}'
       this.initTrollBox()
     }
   })

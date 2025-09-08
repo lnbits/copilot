@@ -22,7 +22,7 @@
     <q-card-section>
       <div class="row">
         <div class="col" style="max-width: 100px">
-          <lnbits-qrcode :value="chatUrl"></lnbits-qrcode>
+          <lnbits-qrcode :value="chatUrl" :show-buttons="false"></lnbits-qrcode>
         </div>
         <div class="col">
           <div class="text-h6 q-ml-md">Trollbox</div>
@@ -75,12 +75,12 @@
         :url="url"
         :show-buttons="false"
       ></lnbits-qrcode-lnurl>
-      <center
-        class="absolute-bottom"
-        style="color: black; font-size: 20px"
-        v-text="copilot.lnurl_title"
-      ></center>
     </div>
+    <center
+      class="absolute-bottom"
+      style="color: black; font-size: 20px"
+      v-text="copilot.lnurl_title"
+    ></center>
   </div>
 
   <h2
@@ -212,24 +212,12 @@
       },
       initTrollBox() {
         this.troll_box = !this.troll_box
-        if (location.protocol !== 'http:') {
-          this.chatUrl =
-            'wss://' +
-            document.domain +
-            ':' +
-            location.port +
-            '/api/v1/ws/' +
-            this.chat_id
-        } else {
-          this.chatUrl =
-            'ws://' +
-            document.domain +
-            ':' +
-            location.port +
-            '/api/v1/ws/' +
-            this.chat_id
-        }
-        this.connectionchat = new WebSocket(this.chatUrl)
+        const url = new URL(window.location)
+        url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
+        url.pathname = `/api/v1/ws/${this.chat_id}`
+
+        this.connectionchat = new WebSocket(url)
+        this.chatUrl = url.toString()
         this.connectionchat.onmessage = e => {
           res = e.data.split('-')
           if (res[0].length < 1 || res[1].length < 1) {
@@ -335,27 +323,34 @@
         return data => (pending = run(data))
       })()
 
-      if (location.protocol !== 'http:') {
-        localUrl =
-          'wss://' +
-          document.domain +
-          ':' +
-          location.port +
-          '/api/v1/ws/' +
-          this.copilot.id
-      } else {
-        localUrl =
-          'ws://' +
-          document.domain +
-          ':' +
-          location.port +
-          '/api/v1/ws/' +
-          this.copilot.id
-      }
+      const localUrl = new URL(window.location)
+      localUrl.protocol = localUrl.protocol === 'https:' ? 'wss:' : 'ws:'
+      localUrl.pathname = `/api/v1/ws/${this.copilot.id}`
+
+      // if (location.protocol !== 'http:') {
+      //   localUrl =
+      //     'wss://' +
+      //     document.domain +
+      //     ':' +
+      //     location.port +
+      //     '/api/v1/ws/' +
+      //     this.copilot.id
+      // } else {
+      //   localUrl =
+      //     'ws://' +
+      //     document.domain +
+      //     ':' +
+      //     location.port +
+      //     '/api/v1/ws/' +
+      //     this.copilot.id
+      // }
       this.connection = new WebSocket(localUrl)
       this.connection.onmessage = e => {
         console.log(e)
-        res = e.data.replace(' ', '').split('-')
+        res = e.data
+          .replace(' ', '')
+          .split('-')
+          .map(s => s.trim())
         if (res[0] == 'rocket') {
           addTask(['40%', '/copilot/static/rocket.gif', res[1]])
         }
@@ -376,7 +371,7 @@
         }
         if (res[0] == 'trollbox') {
           this.chat_id = res[1]
-          this.chatLink = '/copilot/chat/' + this.chat_id
+          this.chatLink = `/copilot/chat/${this.chat_id}`
           this.initTrollBox()
         }
         if (res[0] == 'trollboxchat') {

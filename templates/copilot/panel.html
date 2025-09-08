@@ -92,7 +92,7 @@
           </div>
         </div>
 
-        <q-input v-model="chatId" label="Troll box ID">
+        <q-input v-model.trim="chatId" label="Troll box ID">
           <template v-slot:after>
             <q-btn round dense flat icon="launch" @click="launchChat" />
           </template>
@@ -153,11 +153,7 @@
         LNbits.api
           .request(
             'GET',
-            '/copilot/api/v1/copilot/ws/' +
-              this.copilot.id +
-              '/' +
-              this.chatId +
-              '/trollbox'
+            `/copilot/api/v1/copilot/ws/${this.copilot.id}/${this.chatId}/trollbox`
           )
           .then(response1 => {
             Quasar.Notify.create({
