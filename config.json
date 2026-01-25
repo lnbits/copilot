@@ -1,8 +1,12 @@
 {
+  "id": "copilot",
+  "version": "1.0.4",
   "name": "Streamer Copilot",
+  "repo": "https://github.com/lnbits/copilot",
   "short_description": "Video tips/animations/webhooks",
+  "description": "",
   "tile": "/copilot/static/bitcoin-streaming.png",
-  "min_lnbits_version": "1.0.0",
+  "min_lnbits_version": "1.3.0",
   "contributors": [
     {
       "name": "Ben Arc",
@@ -24,5 +28,9 @@
   ],
   "description_md": "https://raw.githubusercontent.com/lnbits/copilot/main/description.md",
   "terms_and_conditions_md": "https://raw.githubusercontent.com/lnbits/copilot/main/toc.md",
-  "license": "MIT"
+  "license": "MIT",
+  "paid_features": "",
+  "tags": ["Creators", "Streaming"],
+  "donate": "",
+  "hidden": false
 }
