@@ -8,7 +8,7 @@ db = Database("ext_copilot")
 
 async def create_copilot(data: CreateCopilotData) -> Copilot:
     copilot_id = urlsafe_short_hash()
-    copilot = Copilot(id=copilot_id, **data.dict())
+    copilot = Copilot(id=copilot_id, **data.model_dump())
     await db.insert("copilot.newer_copilots", copilot)
     return copilot
 
