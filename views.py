@@ -16,7 +16,11 @@ def copilot_renderer():
 async def index(request: Request, user: User = Depends(check_user_exists)):
     return copilot_renderer().TemplateResponse(
         "copilot/index.html",
-        {"request": request, "user": user.json(), "currencies": allowed_currencies()},
+        {
+            "request": request,
+            "user": user.model_dump_json(),
+            "currencies": allowed_currencies(),
+        },
     )
 
 

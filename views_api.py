@@ -39,7 +39,7 @@ async def api_copilot_retrieve(
         )
     if not copilot.lnurl_toggle:
         return copilot
-    return {**copilot.dict(), **{"lnurl": copilot.lnurl(req)}}
+    return {**copilot.model_dump(), **{"lnurl": copilot.lnurl(req)}}
 
 
 @copilot_api_router.post("/api/v1/copilot")
@@ -66,7 +66,7 @@ async def api_copilot_update(
 
     data.user = wallet.wallet.user
     data.wallet = wallet.wallet.id
-    for key, value in data.dict().items():
+    for key, value in data.model_dump().items():
         if value:
             setattr(copilot, key, value)
     return await update_copilot(copilot)
