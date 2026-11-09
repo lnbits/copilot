@@ -13,7 +13,10 @@ copilot_lnurl_router = APIRouter()
 
 
 @copilot_lnurl_router.get(
-    "/lnurl/{cp_id}", response_class=HTMLResponse, name="copilot.lnurl_response"
+    "/lnurl/{cp_id}",
+    response_class=HTMLResponse,
+    name="copilot.lnurl_response",
+    openapi_extra={"x-lnbits-local-lnurl": True},
 )
 async def lnurl_response(req: Request, cp_id: str):
     cp = await get_copilot(cp_id)
@@ -35,7 +38,11 @@ async def lnurl_response(req: Request, cp_id: str):
     return json.dumps(pay_response)
 
 
-@copilot_lnurl_router.get("/lnurl/cb/{cp_id}", name="copilot.lnurl_callback")
+@copilot_lnurl_router.get(
+    "/lnurl/cb/{cp_id}",
+    name="copilot.lnurl_callback",
+    openapi_extra={"x-lnbits-local-lnurl": True},
+)
 async def lnurl_callback(
     cp_id: str, amount: str = Query(None), comment: str = Query(None)
 ):
