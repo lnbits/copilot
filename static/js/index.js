@@ -161,13 +161,13 @@ window.app = Vue.createApp({
       this.getCopilot(copilot_id)
       let params =
         'scrollbars=no, resizable=no,status=no,location=no,toolbar=no,menubar=no,width=1200,height=644,left=410,top=100'
-      open('../copilot/cp/', '_blank', params)
+      open('/copilot/cp', '_blank', params)
     },
     openCopilotPanel(copilot_id) {
       this.getCopilot(copilot_id)
       let params =
         'scrollbars=no, resizable=no,status=no,location=no,toolbar=no,menubar=no,width=300,height=450,left=10,top=400'
-      open('../copilot/pn/', '_blank', params)
+      open('/copilot/pn', '_blank', params)
     },
     deleteCopilotLink(copilotId) {
       const link = _.findWhere(this.copilotLinks, {id: copilotId})

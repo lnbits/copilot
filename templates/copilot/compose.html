@@ -8,6 +8,10 @@
   <video
     autoplay="true"
     id="videoCamera"
+    muted
+    playsinline
+    @vue:mounted="initCamera($event.el)"
+    @vue:before-unmount="stopCamera($event.el)"
     style="width: 100%"
     class="fixed-bottom-right"
   ></video>
@@ -23,6 +27,7 @@
       <div class="row">
         <div class="col" style="max-width: 100px">
           <lnbits-qrcode
+            v-if="fullChatLink"
             :value="fullChatLink"
             class="rounded-borders"
             :show-buttons="false"
@@ -170,7 +175,8 @@
         trollbox: [],
         chatUrl: '',
         chat_id: '',
-        chatLink: ''
+        chatLink: '',
+        fullChatLink: ''
       }
     },
     computed: {
@@ -194,17 +200,23 @@
       openURL(url) {
         return Quasar.utils.openURL(url)
       },
-      initCamera() {
-        const video = document.querySelector('#videoCamera')
-
-        if (navigator.mediaDevices.getUserMedia) {
+      initCamera(video) {
+        if (navigator.mediaDevices?.getUserMedia) {
           navigator.mediaDevices
             .getUserMedia({video: true})
             .then(stream => {
+              if (!video.isConnected) {
+                stream.getTracks().forEach(track => track.stop())
+                return
+              }
               video.srcObject = stream
             })
             .catch(LNbits.utils.notifyApiError)
         }
+      },
+      stopCamera(video) {
+        video.srcObject?.getTracks().forEach(track => track.stop())
+        video.srcObject = null
       },
       initScreenShare() {
         const video = document.querySelector('#videoScreen')
@@ -251,8 +263,9 @@
       pushAnim(content) {
         document.getElementById('animations').style.width = content[0]
         document.getElementById('animations').src = content[1]
-        if (content[2] != 'none') {
-          this.showNotif(content[2])
+        const comment = (content[2] || '').trim()
+        if (comment && comment !== 'none') {
+          this.showNotif(comment)
         }
         setTimeout(() => {
           document.getElementById('animations').src = ''
@@ -298,9 +311,6 @@
           })
           .catch(LNbits.utils.notifyApiError)
       }
-    },
-    mounted() {
-      this.initCamera()
     },
     created() {
       $(() => {
@@ -361,7 +371,8 @@
       this.connection = new WebSocket(localUrl)
       this.connection.onmessage = e => {
         console.log(e)
-        res = e.data.replace(' ', '').split('-')
+        const [event, ...commentParts] = e.data.split('-')
+        const res = [event.trim(), commentParts.join('-').trim()]
         if (res[0] == 'rocket') {
           addTask(['40%', '/copilot/static/rocket.gif', res[1]])
         }
