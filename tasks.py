@@ -6,6 +6,7 @@ from lnbits.core.models import Payment
 from lnbits.core.services import websocket_updater
 from lnbits.helpers import get_current_extension_name
 from lnbits.tasks import register_invoice_listener
+from lnbits.utils.safe_http import SafeHttpClient
 from loguru import logger
 
 from .crud import get_copilot
@@ -46,7 +47,7 @@ async def on_invoice_paid(payment: Payment) -> None:
                     data = copilot.animation3
                     webhook = copilot.animation1webhook
     if webhook:
-        async with httpx.AsyncClient() as client:
+        async with SafeHttpClient(read_body=False) as client:
             try:
                 r = await client.post(
                     webhook,
@@ -60,7 +61,7 @@ async def on_invoice_paid(payment: Payment) -> None:
                 )
                 r.raise_for_status()
                 payment.extra["wh_status"] = r.status_code
-            except (httpx.ConnectError, httpx.RequestError):
+            except (httpx.HTTPError, httpx.InvalidURL, ValueError):
                 payment.extra["wh_status"] = -1
             finally:
                 await update_payment(payment)

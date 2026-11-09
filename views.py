@@ -24,14 +24,14 @@ async def index(request: Request, user: User = Depends(check_user_exists)):
     )
 
 
-@copilot_generic_router.get("/cp/", response_class=HTMLResponse)
+@copilot_generic_router.get("/cp", response_class=HTMLResponse)
 async def compose(request: Request):
     return copilot_renderer().TemplateResponse(
         "copilot/compose.html", {"request": request}
     )
 
 
-@copilot_generic_router.get("/pn/", response_class=HTMLResponse)
+@copilot_generic_router.get("/pn", response_class=HTMLResponse)
 async def panel(request: Request):
     return copilot_renderer().TemplateResponse(
         "copilot/panel.html", {"request": request}
