@@ -3,7 +3,7 @@
   "version": "1.1.0",
   "short_description": "Video tips/animations/webhooks",
   "tile": "/copilot/static/bitcoin-streaming.png",
-  "min_lnbits_version": "1.7.0-rc1",
+  "min_lnbits_version": "1.7.0",
   "contributors": [
     {
       "name": "Ben Arc",
